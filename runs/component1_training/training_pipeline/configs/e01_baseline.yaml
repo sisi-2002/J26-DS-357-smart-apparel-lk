@@ -1,0 +1,24 @@
+# E01 — Baseline YOLOv8n Training
+# 4 GB VRAM safe configuration
+# Uses official pretrained checkpoint and Phase 5 augmentation
+
+experiment_id: E01_baseline
+model: yolov8n.pt
+imgsz: 640
+batch: 4
+epochs: 150
+patience: 35
+optimizer: AdamW
+lr0: 0.001
+lrf: 0.01
+cos_lr: true
+warmup_epochs: 3.0
+weight_decay: 0.0005
+momentum: 0.937
+amp: true
+workers: 0
+cache: false
+seed: 42
+deterministic: true
+close_mosaic: 10
+save_period: -1
