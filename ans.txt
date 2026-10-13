@@ -1,7 +1,7 @@
 (pytorch-cuda) D:\Freelance\Nadee\garment_order_system>python compare_models.py
 2026-10-13 18:49:25.536438: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
 
-🚀 Training N1 models...
+ Training Order Acceptance(N1) models...
   → DNN
 2026-10-13 18:49:30.656776: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
@@ -13,9 +13,9 @@ To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 AVX_VNNI FMA, 
   → GANN (this takes ~1-2 min)
      GANN best config: {'hidden': [123, 62, 8], 'dropout': 0.4916154429033941, 'lr': 0.0011653978525847418, 'epochs': 14}
 
-🏆 Best N1 model: DNN  (ROC-AUC = 0.8411)
+ Best N1 model: DNN  (ROC-AUC = 0.8411)
 
-🚀 Training N2 models...
+ Training N2 models...
   → Decision Tree
   → Random Forest
   → Gradient Boosting
