@@ -1,0 +1,44 @@
+{
+  "config_version": "calibration_v1_PROVISIONAL",
+  "status": "provisional_NOT_frozen",
+  "generated_at_utc": "2026-10-17T18:41:33.165880+00:00",
+  "generated_by": "F2.1B2 Tasks 5 & 6 (calibration_scoring_v1.py)",
+  "source_data_csv": "research/component1/function2/results/calibration/train_features_v1_full.csv",
+  "n_eligible_samples_used": 1747,
+  "n_samples_with_composite_score": 1747,
+  "normalization": {
+    "method": "zscore (population mean/std, ddof=0, over the eligible TRAIN-split distribution only)",
+    "features": {
+      "luminance_variation": {
+        "mean": 36.7403900799628,
+        "std": 16.32109846115975
+      },
+      "glcm_entropy": {
+        "mean": 6.373337942470548,
+        "std": 1.6842709755758238
+      },
+      "colour_variation": {
+        "mean": 4.985333406910759,
+        "std": 6.479936315937947
+      }
+    }
+  },
+  "weights": {
+    "candidate": {
+      "luminance_variation": 0.3333333333333333,
+      "glcm_entropy": 0.3333333333333333,
+      "colour_variation": 0.3333333333333333
+    },
+    "candidate_label": "equal_weighting_default_candidate_NOT_validated"
+  },
+  "thresholds": {
+    "method": "tertile_quantiles_of_eligible_training_composite_score_distribution",
+    "simple_max": -0.37460474461691057,
+    "moderate_max": 0.2505520866819552,
+    "label": "candidate_NOT_expert_validated",
+    "boundary_adjacent_margin": 0.06564740267477663,
+    "boundary_adjacent_margin_method": "2.0x the larger of the two cut points' bootstrap-resampling standard deviations (see bootstrap_stability in the scoring summary JSON) -- i.e. samples whose composite score is close enough to a cut point that a modest resampling of the training data could plausibly move them to the other side of it."
+  },
+  "expert_review_status": "pending",
+  "must_not_be_adjusted_using": "any Grad-CAM/Grad-CAM++/XAI-metric result"
+}
