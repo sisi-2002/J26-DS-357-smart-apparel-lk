@@ -1,0 +1,574 @@
+{
+  "data_note": "Checked-in records are generated sample data; replace and validate against actual factory history before operational use.",
+  "training_orders": 3000,
+  "N1_user_inputs": [
+    "order_quantity",
+    "handover_days",
+    "required_smv_total",
+    "order_value",
+    "style_id",
+    "priority"
+  ],
+  "training_signature": "six-order-inputs-v1",
+  "N1_features": [
+    "order_quantity",
+    "handover_days",
+    "required_smv_total",
+    "order_value",
+    "style_enc",
+    "priority_enc",
+    "unit_value",
+    "estimated_workload_min",
+    "estimated_workload_per_day",
+    "capacity_ratio"
+  ],
+  "N1_best": "DNN (TensorFlow/Keras)",
+  "N1_selection_metric": "Lowest 5-fold cross-validated Brier score; ROC-AUC breaks ties",
+  "N1_models": {
+    "DNN (TensorFlow/Keras)": {
+      "accuracy": 0.879,
+      "precision": 0.909,
+      "recall": 0.9545,
+      "f1": 0.9312,
+      "roc_auc": 0.8494,
+      "brier_score": 0.0875,
+      "confusion_matrix": [
+        [
+          180,
+          246
+        ],
+        [
+          117,
+          2457
+        ]
+      ]
+    },
+    "Extra Trees": {
+      "accuracy": 0.8797,
+      "precision": 0.8982,
+      "recall": 0.9697,
+      "f1": 0.9326,
+      "roc_auc": 0.8555,
+      "brier_score": 0.0878,
+      "confusion_matrix": [
+        [
+          143,
+          283
+        ],
+        [
+          78,
+          2496
+        ]
+      ]
+    },
+    "Logistic Regression": {
+      "accuracy": 0.8807,
+      "precision": 0.8974,
+      "recall": 0.972,
+      "f1": 0.9332,
+      "roc_auc": 0.8545,
+      "brier_score": 0.0879,
+      "confusion_matrix": [
+        [
+          140,
+          286
+        ],
+        [
+          72,
+          2502
+        ]
+      ]
+    },
+    "Graph Neural Network (GNN)": {
+      "accuracy": 0.8837,
+      "precision": 0.9018,
+      "recall": 0.9701,
+      "f1": 0.9347,
+      "roc_auc": 0.843,
+      "brier_score": 0.0882,
+      "confusion_matrix": [
+        [
+          154,
+          272
+        ],
+        [
+          77,
+          2497
+        ]
+      ]
+    },
+    "Gradient Boosting": {
+      "accuracy": 0.8777,
+      "precision": 0.8957,
+      "recall": 0.9705,
+      "f1": 0.9316,
+      "roc_auc": 0.8498,
+      "brier_score": 0.0883,
+      "confusion_matrix": [
+        [
+          135,
+          291
+        ],
+        [
+          76,
+          2498
+        ]
+      ]
+    },
+    "Genetic Algorithm Neural Network (GANN)": {
+      "accuracy": 0.88,
+      "precision": 0.8996,
+      "recall": 0.9681,
+      "f1": 0.9326,
+      "roc_auc": 0.8393,
+      "brier_score": 0.089,
+      "confusion_matrix": [
+        [
+          148,
+          278
+        ],
+        [
+          82,
+          2492
+        ]
+      ]
+    },
+    "K-Nearest Neighbors": {
+      "accuracy": 0.879,
+      "precision": 0.8975,
+      "recall": 0.9697,
+      "f1": 0.9322,
+      "roc_auc": 0.8489,
+      "brier_score": 0.0891,
+      "confusion_matrix": [
+        [
+          141,
+          285
+        ],
+        [
+          78,
+          2496
+        ]
+      ]
+    },
+    "Random Forest": {
+      "accuracy": 0.878,
+      "precision": 0.9003,
+      "recall": 0.9646,
+      "f1": 0.9314,
+      "roc_auc": 0.8527,
+      "brier_score": 0.0901,
+      "confusion_matrix": [
+        [
+          151,
+          275
+        ],
+        [
+          91,
+          2483
+        ]
+      ]
+    },
+    "Histogram Gradient Boosting": {
+      "accuracy": 0.8687,
+      "precision": 0.8964,
+      "recall": 0.9577,
+      "f1": 0.926,
+      "roc_auc": 0.8469,
+      "brier_score": 0.0928,
+      "confusion_matrix": [
+        [
+          141,
+          285
+        ],
+        [
+          109,
+          2465
+        ]
+      ]
+    },
+    "AdaBoost": {
+      "accuracy": 0.8783,
+      "precision": 0.8915,
+      "recall": 0.9771,
+      "f1": 0.9323,
+      "roc_auc": 0.8529,
+      "brier_score": 0.0987,
+      "confusion_matrix": [
+        [
+          120,
+          306
+        ],
+        [
+          59,
+          2515
+        ]
+      ]
+    },
+    "Gaussian Naive Bayes": {
+      "accuracy": 0.8373,
+      "precision": 0.9339,
+      "recall": 0.8722,
+      "f1": 0.902,
+      "roc_auc": 0.8386,
+      "brier_score": 0.145,
+      "confusion_matrix": [
+        [
+          267,
+          159
+        ],
+        [
+          329,
+          2245
+        ]
+      ]
+    },
+    "Decision Tree": {
+      "accuracy": 0.7587,
+      "precision": 0.9355,
+      "recall": 0.772,
+      "f1": 0.8459,
+      "roc_auc": 0.7725,
+      "brier_score": 0.1717,
+      "confusion_matrix": [
+        [
+          289,
+          137
+        ],
+        [
+          587,
+          1987
+        ]
+      ]
+    }
+  },
+  "N2_best": "Histogram Gradient Boosting",
+  "N2_selection_metric": "Lowest order-grouped 5-fold cross-validated Brier score; ROC-AUC breaks ties",
+  "N2_models": {
+    "Histogram Gradient Boosting": {
+      "accuracy": 0.954,
+      "precision": 0.9103,
+      "recall": 0.7889,
+      "f1": 0.8452,
+      "roc_auc": 0.9623,
+      "brier_score": 0.0385,
+      "confusion_matrix": [
+        [
+          13368,
+          200
+        ],
+        [
+          543,
+          2029
+        ]
+      ]
+    },
+    "Random Forest": {
+      "accuracy": 0.9535,
+      "precision": 0.9114,
+      "recall": 0.7842,
+      "f1": 0.8431,
+      "roc_auc": 0.9618,
+      "brier_score": 0.0386,
+      "confusion_matrix": [
+        [
+          13372,
+          196
+        ],
+        [
+          555,
+          2017
+        ]
+      ]
+    },
+    "Gradient Boosting": {
+      "accuracy": 0.9537,
+      "precision": 0.9039,
+      "recall": 0.7935,
+      "f1": 0.8451,
+      "roc_auc": 0.9618,
+      "brier_score": 0.0386,
+      "confusion_matrix": [
+        [
+          13351,
+          217
+        ],
+        [
+          531,
+          2041
+        ]
+      ]
+    },
+    "DNN (TensorFlow/Keras)": {
+      "accuracy": 0.9538,
+      "precision": 0.9083,
+      "recall": 0.7897,
+      "f1": 0.8448,
+      "roc_auc": 0.9618,
+      "brier_score": 0.0387,
+      "confusion_matrix": [
+        [
+          13363,
+          205
+        ],
+        [
+          541,
+          2031
+        ]
+      ]
+    },
+    "Extra Trees": {
+      "accuracy": 0.9535,
+      "precision": 0.9038,
+      "recall": 0.7924,
+      "f1": 0.8444,
+      "roc_auc": 0.9594,
+      "brier_score": 0.0392,
+      "confusion_matrix": [
+        [
+          13351,
+          217
+        ],
+        [
+          534,
+          2038
+        ]
+      ]
+    },
+    "Genetic Algorithm Neural Network (GANN)": {
+      "accuracy": 0.9528,
+      "precision": 0.9136,
+      "recall": 0.7772,
+      "f1": 0.8399,
+      "roc_auc": 0.9589,
+      "brier_score": 0.0394,
+      "confusion_matrix": [
+        [
+          13379,
+          189
+        ],
+        [
+          573,
+          1999
+        ]
+      ]
+    },
+    "Graph Neural Network (GNN)": {
+      "accuracy": 0.9525,
+      "precision": 0.9082,
+      "recall": 0.7807,
+      "f1": 0.8396,
+      "roc_auc": 0.9542,
+      "brier_score": 0.0402,
+      "confusion_matrix": [
+        [
+          13365,
+          203
+        ],
+        [
+          564,
+          2008
+        ]
+      ]
+    },
+    "K-Nearest Neighbors": {
+      "accuracy": 0.9501,
+      "precision": 0.8918,
+      "recall": 0.7819,
+      "f1": 0.8332,
+      "roc_auc": 0.947,
+      "brier_score": 0.0422,
+      "confusion_matrix": [
+        [
+          13324,
+          244
+        ],
+        [
+          561,
+          2011
+        ]
+      ]
+    },
+    "Logistic Regression": {
+      "accuracy": 0.9431,
+      "precision": 0.8161,
+      "recall": 0.8297,
+      "f1": 0.8228,
+      "roc_auc": 0.8994,
+      "brier_score": 0.0496,
+      "confusion_matrix": [
+        [
+          13087,
+          481
+        ],
+        [
+          438,
+          2134
+        ]
+      ]
+    },
+    "AdaBoost": {
+      "accuracy": 0.9394,
+      "precision": 0.7963,
+      "recall": 0.8328,
+      "f1": 0.8141,
+      "roc_auc": 0.9222,
+      "brier_score": 0.0633,
+      "confusion_matrix": [
+        [
+          13020,
+          548
+        ],
+        [
+          430,
+          2142
+        ]
+      ]
+    },
+    "Decision Tree": {
+      "accuracy": 0.9011,
+      "precision": 0.6448,
+      "recall": 0.8441,
+      "f1": 0.7311,
+      "roc_auc": 0.9353,
+      "brier_score": 0.071,
+      "confusion_matrix": [
+        [
+          12372,
+          1196
+        ],
+        [
+          401,
+          2171
+        ]
+      ]
+    },
+    "Gaussian Naive Bayes": {
+      "accuracy": 0.9127,
+      "precision": 0.687,
+      "recall": 0.8305,
+      "f1": 0.752,
+      "roc_auc": 0.88,
+      "brier_score": 0.072,
+      "confusion_matrix": [
+        [
+          12595,
+          973
+        ],
+        [
+          436,
+          2136
+        ]
+      ]
+    }
+  },
+  "N2_training_orders": 2690,
+  "cost_best": "Extra Trees",
+  "cost_models": {
+    "Extra Trees": {
+      "mae": 22361.3,
+      "r2": 0.964
+    },
+    "Random Forest": {
+      "mae": 23005.27,
+      "r2": 0.9619
+    },
+    "Histogram Gradient Boosting": {
+      "mae": 23264.48,
+      "r2": 0.9653
+    },
+    "Decision Tree": {
+      "mae": 26642.39,
+      "r2": 0.9478
+    },
+    "K-Nearest Neighbors": {
+      "mae": 31188.34,
+      "r2": 0.9366
+    },
+    "Gradient Boosting": {
+      "mae": 31275.61,
+      "r2": 0.9316
+    },
+    "AdaBoost": {
+      "mae": 53323.2,
+      "r2": 0.9124
+    },
+    "Linear Regression": {
+      "mae": 93356.75,
+      "r2": 0.782
+    }
+  },
+  "line_model": "Line-aware Logistic Regression",
+  "factory_shifts_per_day": 2,
+  "line_model_metrics": {
+    "accuracy": 0.9108,
+    "precision": 0.9281,
+    "recall": 0.9697,
+    "f1": 0.9484,
+    "roc_auc": 0.9119,
+    "brier_score": 0.0655,
+    "confusion_matrix": [
+      [
+        244,
+        171
+      ],
+      [
+        69,
+        2206
+      ]
+    ]
+  },
+  "workforce_model": "Worker-operation Random Forest Regressor",
+  "workforce_model_metrics": {
+    "efficiency_mae": 3.232,
+    "efficiency_r2": 0.8741,
+    "quality_mae": 2.316,
+    "quality_r2": 0.9161
+  },
+  "workforce_models": {
+    "Extra Trees": {
+      "efficiency_mae": 3.254,
+      "efficiency_r2": 0.8723,
+      "quality_mae": 2.333,
+      "quality_r2": 0.9147
+    },
+    "Random Forest": {
+      "efficiency_mae": 3.232,
+      "efficiency_r2": 0.8741,
+      "quality_mae": 2.316,
+      "quality_r2": 0.9161
+    }
+  },
+  "workforce_training_allocations": 13659,
+  "workforce_training_orders": 2996,
+  "capacity_model": "Gradient Boosting (Huber)",
+  "capacity_model_metrics": {
+    "mae_standard_minutes_per_line_shift": 1049.647,
+    "r2": 0.4711
+  },
+  "capacity_model_candidates": {
+    "Gradient Boosting (Huber)": {
+      "mae_standard_minutes_per_line_shift": 1049.647,
+      "r2": 0.4711
+    },
+    "Extra Trees": {
+      "mae_standard_minutes_per_line_shift": 1089.973,
+      "r2": 0.4539
+    },
+    "Random Forest": {
+      "mae_standard_minutes_per_line_shift": 1104.699,
+      "r2": 0.4453
+    }
+  },
+  "capacity_model_training_rows": 2690,
+  "capacity_model_training_orders": 2690,
+  "capacity_model_features": [
+    "order_quantity",
+    "handover_days",
+    "required_smv_total",
+    "style_enc",
+    "shift_hours"
+  ],
+  "capacity_model_target": "recorded completed quantity * SMV / elapsed days / historical line equivalents / shifts, normalized to 8 hours",
+  "capacity_model_interval": "P10/P50/P90 from order-grouped out-of-fold residuals; planning range, not guarantee"
+}

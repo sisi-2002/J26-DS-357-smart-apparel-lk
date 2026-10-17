@@ -1,157 +1,184 @@
-"""
- Flask app: loads the auto-selected best models from the comparison report.
-"""
+"""Flask app for historical order-capacity planning."""
+import json
+import os
+
 from flask import Flask, render_template, request
-import numpy as np, pandas as pd, joblib, json
-from tensorflow.keras.models import load_model
+import joblib
+import pandas as pd
+from historical_capacity import build_historical_capacity_plan
+from line_model_features import (
+    LINE_MODEL_FEATURES,
+    historical_line_count,
+    make_line_features,
+)
+from research_analysis import (
+    analyze_intervention_options,
+    predict_line_feasibility,
+)
+from factory_config import FACTORY_SHIFTS_PER_DAY
 
 app = Flask(__name__)
 
-#  Load the comparison report to know which model won each task.
-with open("models/model_comparison.json") as f:
-    REPORT = json.load(f)
+# Completed orders are the source for the historical throughput benchmark.
+orders_data = pd.read_csv("data/orders.csv")
+interventions_data = pd.read_csv("data/interventions.csv")
+shift_hours = float(pd.to_numeric(orders_data["shift_hours"], errors="coerce").median())
 
-scaler_n1   = joblib.load("models/scaler_n1.pkl")
-scaler_n2   = joblib.load("models/scaler_n2.pkl")
-n1_features = joblib.load("models/n1_features.pkl")
-n2_features = joblib.load("models/n2_features.pkl")
 
-def load_any(path):
-    """Load either a .h5 Keras model or a .pkl sklearn model."""
-    if path.endswith(".h5"):
-        return load_model(path, compile=False)
-    return joblib.load(path)
+def _load_bundle(path):
+    if not os.path.exists(path):
+        return None
+    try:
+        bundle = joblib.load(path)
+        if bundle.get("type") == "keras":
+            import tensorflow as tf
+            bundle["model"] = tf.keras.models.load_model(
+                bundle["model_path"], compile=False,
+            )
+        return bundle
+    except Exception as exc:
+        print(f"Could not load {path}: {exc}")
+        return None
 
-best_n1_name = REPORT["N1_best"]
-best_n2_name = REPORT["N2_best"]
 
-#  Try to load the best models. If a .pkl file is available, use it;
-# otherwise, fall back to the saved .h5 model for Keras-based solutions.
-def load_best(name, task):
-    pkl = f"models/{task}_best_{name.replace(' ','_')}.pkl"
-    if joblib.os.path.exists(pkl):
-        return joblib.load(pkl)
-    # fallback: load generic saved files
-    if name == "DNN" or name == "GANN":
-        return load_model(f"models/model_{task}.h5", compile=False)
-    return joblib.load(f"models/model_{task}_rf.pkl")
+capacity_model = _load_bundle("models/line_shift_capacity_model.pkl")
+line_model = _load_bundle("models/line_feasibility_model.pkl")
+if line_model:
+    training_orders = orders_data[
+        pd.to_numeric(orders_data["n_shifts"], errors="coerce").le(FACTORY_SHIFTS_PER_DAY)
+    ]
+    if not training_orders.empty:
+        line_features = pd.DataFrame([
+            make_line_features(
+                row.order_quantity, row.handover_days, row.required_smv_total,
+                row.order_value, row.style_id, row.priority,
+                historical_line_count(row.n_available_workers), row.n_shifts,
+                row.shift_hours,
+            )
+            for row in training_orders.itertuples()
+        ], columns=LINE_MODEL_FEATURES)
+        fallback_ranges = {
+            feature: [float(line_features[feature].min()), float(line_features[feature].max())]
+            for feature in LINE_MODEL_FEATURES
+        }
+        for feature, limits in fallback_ranges.items():
+            line_model.setdefault("training_ranges", {}).setdefault(feature, limits)
+n2_bundle = _load_bundle("models/best_n2_model.pkl")
+cost_model = None
+if os.path.exists("models/best_cost_model.pkl"):
+    try:
+        cost_model = joblib.load("models/best_cost_model.pkl")
+    except Exception as exc:
+        print(f"Could not load models/best_cost_model.pkl: {exc}")
 
-#  Retrain-time save ensures each bundle contains the selected model and metadata.
-best_n1_bundle = joblib.load("models/best_n1_model.pkl")
-best_n2_bundle = joblib.load("models/best_n2_model.pkl")
-best_cost      = joblib.load("models/best_cost_model.pkl")
+training_report = {}
+try:
+    with open("models/model_comparison.json", encoding="utf-8") as report_file:
+        training_report = json.load(report_file)
+except (OSError, json.JSONDecodeError):
+    pass
 
-def predict_proba(bundle, X):
-    """Works for both keras & sklearn bundles."""
-    model = bundle["model"]
-    if bundle["type"] == "keras":
-        return model.predict(X, verbose=0).ravel()
-    return model.predict_proba(X)[:, 1]
-
-#  Scenario mapping used to compare intervention options.
-SCENARIO_MAP = {"Current": 0, "Overtime": 1, "Extra_Workers": 2,
-                "Machine_Adjust": 3, "Outsourcing": 4, "Hybrid": 5}
-
-def build_n1_vector(form):
-    qty = float(form["order_quantity"]); days = float(form["handover_days"])
-    smv = float(form["required_smv_total"]); workload = qty * smv
-    row = {
-        "order_quantity": qty, "handover_days": days,
-        "order_value": float(form["order_value"]),
-        "required_smv_total": smv, "required_workload_min": workload,
-        "workload_per_day": workload / days,
-        "priority_enc": {"Low": 0, "Normal": 1, "High": 2}.get(form["priority"], 1),
-        "style_enc": {"Polo": 0, "T-Shirt": 1, "Hoodie": 2, "Legging": 3, "Jacket": 4}.get(form["style"], 0),
-        "total_assigned_workload": float(form.get("total_assigned_workload", 0)),
-        "n_allocations": float(form.get("n_allocations", 0)),
-        "n_conflicts": float(form.get("n_conflicts", 0)),
-        "avg_worker_eff": float(form.get("avg_worker_eff", 70)),
-        "avg_worker_qual": float(form.get("avg_worker_qual", 92)),
-        "distinct_workers": float(form.get("distinct_workers", 10)),
-        "distinct_machines": float(form.get("distinct_machines", 8)),
-        "active_allocs": float(form.get("active_allocs", 3)),
-        "availability_rate": float(form.get("availability_rate", 0.7)),
-    }
-    return np.array([[row[f] for f in n1_features]])
-
-def evaluate_scenarios(base_input):
-    results = []
-    for sname, senc in SCENARIO_MAP.items():
-        aw = {"Current":0,"Overtime":0,"Extra_Workers":5,"Machine_Adjust":0,"Outsourcing":0,"Hybrid":3}[sname]
-        ot = {"Current":0,"Overtime":3,"Extra_Workers":0,"Machine_Adjust":0,"Outsourcing":0,"Hybrid":2}[sname]
-        am = {"Current":0,"Overtime":0,"Extra_Workers":0,"Machine_Adjust":3,"Outsourcing":0,"Hybrid":2}[sname]
-        oq = {"Current":0,"Overtime":0,"Extra_Workers":0,"Machine_Adjust":0,
-              "Outsourcing":int(base_input["order_quantity"]*0.3),
-              "Hybrid":int(base_input["order_quantity"]*0.2)}[sname]
-        row = {"scenario_enc": senc, "added_workers": aw, "overtime_hours": ot,
-               "added_machines": am, "outsourced_qty": oq,
-               "order_quantity": base_input["order_quantity"],
-               "handover_days": base_input["handover_days"],
-               "order_value": base_input["order_value"],
-               "required_workload_min": base_input["required_workload_min"],
-               "n_conflicts": base_input["n_conflicts"],
-               "avg_worker_eff": base_input["avg_worker_eff"]}
-        vec = scaler_n2.transform(np.array([[row[f] for f in n2_features]]))
-        p   = float(predict_proba(best_n2_bundle, vec)[0])
-        cost = float(best_cost.predict(vec)[0])
-        results.append({"scenario": sname, "p_selected": round(p, 3),
-                        "cost": round(cost, 2), "added_workers": aw,
-                        "overtime_hours": ot, "added_machines": am,
-                        "outsourced_qty": oq})
-    return results
 
 #  Home page: load the dashboard and comparison metrics.
 @app.route("/", methods=["GET"])
 def home():
     return render_template("index.html",
-                           best_n1=best_n1_name, best_n2=best_n2_name,
-                           n1_metrics=REPORT["N1_models"],
-                           n2_metrics=REPORT["N2_models"])
+                           quantity="10000", handover_days="10",
+                           smv="12.5", order_value="2500000",
+                           available_lines="4",
+                           style="Polo", priority="Normal")
 
 #  Prediction endpoint: evaluate the order and present the recommended action.
 @app.route("/predict", methods=["POST"])
 def predict():
     form = request.form
-    x1 = scaler_n1.transform(build_n1_vector(form))
-    p_ontime = float(predict_proba(best_n1_bundle, x1)[0])
+    try:
+        qty = int(form.get("order_quantity", ""))
+        days = int(form.get("handover_days", ""))
+        available_lines = int(form.get("available_lines", ""))
+        # This factory runs two shifts; shift count is fixed and not user-entered.
+        available_shifts = FACTORY_SHIFTS_PER_DAY
+        smv = float(form.get("required_smv_total", ""))
+        order_value = float(form.get("order_value", ""))
+        style = form.get("style", "")
+        priority = form.get("priority", "")
+    except (TypeError, ValueError):
+        return render_template("index.html", quantity=form.get("order_quantity", "10000"),
+                               handover_days=form.get("handover_days", "10"),
+                               smv=form.get("required_smv_total", "12.5"),
+                               order_value=form.get("order_value", "2500000"),
+                               style=form.get("style", "Polo"), priority=form.get("priority", "Normal"),
+                               available_lines=form.get("available_lines", "4"),
+                               available_shifts=FACTORY_SHIFTS_PER_DAY,
+                               error="Enter valid numeric values for quantity, days, lines, SMV and order value."), 400
 
-    base = {"order_quantity": float(form["order_quantity"]),
-            "handover_days": float(form["handover_days"]),
-            "order_value": float(form["order_value"]),
-            "required_workload_min": float(form["order_quantity"]) * float(form["required_smv_total"]),
-            "n_conflicts": float(form.get("n_conflicts", 0)),
-            "avg_worker_eff": float(form.get("avg_worker_eff", 70))}
-    scen = evaluate_scenarios(base)
-    feas = [s for s in scen if s["p_selected"] >= 0.5]
-    best = min(feas, key=lambda s: s["cost"]) if feas else None
+    if qty <= 0 or days <= 0 or smv <= 0 or order_value <= 0:
+        return render_template("index.html", quantity=qty, handover_days=days,
+                               smv=smv, order_value=order_value, style=style, priority=priority,
+                               available_lines=available_lines,
+                               available_shifts=available_shifts,
+                               error="Quantity, handover days, SMV and order value must be greater than zero."), 400
+    if available_lines < 1 or available_lines > 30:
+        return render_template("index.html", quantity=qty, handover_days=days,
+                               smv=smv, order_value=order_value, style=style, priority=priority,
+                               available_lines=available_lines,
+                               available_shifts=available_shifts,
+                               error="Available sewing lines must be from 1 to 30."), 400
+    if style not in {"Polo", "T-Shirt", "Hoodie", "Legging", "Jacket"} or priority not in {"Low", "Normal", "High"}:
+        return render_template("index.html", quantity=qty, handover_days=days,
+                               smv=smv, order_value=order_value, style="Polo", priority="Normal",
+                                available_lines=available_lines,
+                                available_shifts=available_shifts,
+                                error="Choose a valid style and priority."), 400
 
-    if p_ontime >= 0.85 and best and best["scenario"] == "Current":
-        decision = "ACCEPT"
-    elif p_ontime < 0.50 and not feas:
-        decision = "REJECT / RE-PLAN"
-    elif p_ontime < 0.85 and best:
-        decision = "ACCEPT WITH INTERVENTION"
-    else:
-        decision = "RISKY / REVIEW"
-
-    explanation = [f"Best N1 model used: {best_n1_name}",
-                   f"Best N2 model used: {best_n2_name}"]
-    if float(form.get("n_conflicts", 0)) > 0:
-        explanation.append(f"{int(float(form.get('n_conflicts',0)))} allocation conflict(s) detected.")
-    if p_ontime < 0.7:
-        explanation.append("Low on-time probability — resource or deadline risk.")
-    if best and best["scenario"] != "Current":
-        explanation.append(f"Recommended: {best['scenario']} "
-                           f"(+{best['added_workers']} workers, {best['overtime_hours']}h OT, "
-                           f"+{best['added_machines']} machines, outsource {best['outsourced_qty']} pcs).")
+    production_plan = build_historical_capacity_plan(
+        orders_data, qty, days, smv, style, available_lines,
+        available_shifts, shift_hours, order_value=order_value,
+        priority=priority, capacity_model=capacity_model,
+    )
+    if production_plan.get("error"):
+        return render_template("index.html", quantity=qty, handover_days=days,
+                               smv=smv, order_value=order_value, style=style, priority=priority,
+                               available_lines=available_lines, available_shifts=available_shifts,
+                               error=production_plan["error"]), 400
+    n1_analysis = predict_line_feasibility(
+        line_model, training_report.get("line_model_metrics"),
+        qty, days, smv, order_value, style, priority,
+        available_lines, available_shifts, shift_hours,
+    )
+    cost_metrics = training_report.get("cost_models", {}).get(
+        training_report.get("cost_best"), {},
+    )
+    n2_analysis = analyze_intervention_options(
+        n2_bundle, cost_model,
+        training_report.get("N2_models"), cost_metrics,
+        interventions_data, orders_data, qty, days, smv,
+        order_value, style, priority,
+    )
+    recommended = production_plan["recommended"]
+    capacity_ratio = recommended["capacity_ratio"]
+    decision = production_plan["decision"]
+    explanation = [
+        f"{production_plan['capacity_source']}: estimated {production_plan['rate_median']:.1f} pieces per line-shift per day at this order's SMV.",
+        f"The median plan needs {production_plan['plans'][0]['line_shifts_required']} line-shifts; the conservative plan needs {production_plan['plans'][1]['line_shifts_required']}. Maximum capacity is {production_plan['max_line_shifts']} line-shifts across {available_lines} lines and {available_shifts} shifts.",
+        f"Estimated completion: {recommended['estimated_days']} days at the expected rate; conservative estimate: {recommended['conservative_days']} days.",
+        production_plan["planning_note"],
+        production_plan["machine_note"],
+    ]
 
     return render_template("result.html",
-                           p_ontime=round(p_ontime*100, 2),
-                           decision=decision, scenarios=scen, best=best,
-                           explanation=explanation,
-                           best_n1=best_n1_name, best_n2=best_n2_name,
-                           n1_metrics=REPORT["N1_models"],
-                           n2_metrics=REPORT["N2_models"])
+                           order_quantity=qty,
+                           handover_days=days,
+                           estimated_smv=smv,
+                           estimated_order_value=order_value,
+                           estimated_workload=qty * smv,
+                           capacity_ratio=capacity_ratio,
+                           style=style,
+                           priority=priority,
+                           production_plan=production_plan,
+                           n1_analysis=n1_analysis,
+                           n2_analysis=n2_analysis,
+                           decision=decision, explanation=explanation)
 
 #  Start the Flask app for local prediction testing.
 if __name__ == "__main__":
