@@ -1,4 +1,6 @@
 # Pinned for Python 3.11. Local interpreter is Python 3.11.9.
+# NOTE: shap 0.51.0 emits PendingDeprecationWarnings against matplotlib 3.11 (set_bad / set_over / set_under).
+# Re-run research/component2/tests/test_env.py before upgrading matplotlib.
 pandas==3.0.6
 numpy==2.4.6
 scikit-learn==1.9.1
