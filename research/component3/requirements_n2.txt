@@ -1,0 +1,5 @@
+# Supplements the existing C3 requirements.txt
+numpy>=1.24,<3
+pandas>=2.0,<3
+scikit-learn>=1.6,<2
+matplotlib>=3.8,<4
