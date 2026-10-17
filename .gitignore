@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.python-version
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# Secrets (keep the template)
+.env
+.env.*
+!.env.example
+
+# Factory records never enter Git (keep the .gitkeep placeholders)
+/data/*
+!/data/raw/
+!/data/processed/
+!/data/results/
+/data/raw/*
+/data/processed/*
+/data/results/*
+!/data/*/.gitkeep
+research/**/datasets/*
+!research/**/datasets/.gitkeep
+
+# Spreadsheets / columnar data
+*.xlsx
+*.xls
+*.parquet
+
+# Model artifacts
+*.pkl
+*.joblib
+*.pt
+*.h5
+*.onnx
+*.cbm
+*.ubj
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+
+# NOTE: research/component2/reports/ is intentionally NOT ignored --
+# figures and markdown reports are assessment evidence.
