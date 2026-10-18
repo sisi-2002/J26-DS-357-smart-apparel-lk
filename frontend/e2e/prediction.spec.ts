@@ -7,14 +7,14 @@ for (const mode of ['desktop', 'mobile'] as const) {
     const consoleErrors: string[] = [];
     page.on('pageerror', error => consoleErrors.push(error.message));
     await page.goto('/component3/predict-risk');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Understand machine risk.');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Machine Failure-Risk Explorer');
     await expect(page.getByTestId('failure-probability')).toHaveCount(0);
     await page.getByLabel('Historical machine').selectOption('1');
     await page.getByLabel('Prediction snapshot').selectOption('2015-09-02T06:00:00');
 
     const responsePromise = page.waitForResponse(response =>
       response.url().endsWith('/api/v1/component3/predict-risk') && response.request().method() === 'POST');
-    await page.getByRole('button', { name: /Predict failure risk/ }).click();
+    await page.getByRole('button', { name: /Predict selected machine/ }).click();
     const response = await responsePromise;
     expect(response.status()).toBe(200);
     expect(response.request().postDataJSON()).toEqual({ machine_id: 1, prediction_time: '2015-09-02T06:00:00' });

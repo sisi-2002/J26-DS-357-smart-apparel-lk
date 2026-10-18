@@ -7,10 +7,9 @@ from pydantic import BaseModel, ConfigDict, Field, NaiveDatetime, field_validato
 from ..ml.failure_inference import get_research_inference
 
 
-class FailureRiskRequest(BaseModel):
+class HistoricalPredictionRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    machine_id: int = Field(strict=True, gt=0, examples=[1])
     prediction_time: NaiveDatetime = Field(
         description="Timezone-naive synthetic benchmark time: 13 Wednesdays, "
         "2015-09-02 through 2015-11-25 at 06:00:00. No current-time predictions.",
@@ -31,6 +30,10 @@ class FailureRiskRequest(BaseModel):
             raise ValueError("Use one of the 13 weekly benchmark timestamps: "
                              "2015-09-02 through 2015-11-25 at 06:00:00")
         return value
+
+
+class FailureRiskRequest(HistoricalPredictionRequest):
+    machine_id: int = Field(strict=True, gt=0, examples=[1])
 
 
 class EvidenceProfile(BaseModel):
@@ -55,3 +58,23 @@ class FailureRiskResponse(BaseModel):
     model_schema_version: str
     model_version: str = Field(description="SHA-256 identity of the loaded artifact")
     data_status: Literal["synthetic_azure_historical_demo"]
+
+
+class RankedMachine(BaseModel):
+    rank: int = Field(ge=1, le=10)
+    machine_id: int = Field(ge=1, le=100)
+    predicted_failure_probability: float = Field(ge=0, le=1, allow_inf_nan=False)
+
+
+class TopRiskMachinesResponse(BaseModel):
+    prediction_time: NaiveDatetime
+    horizon_days: Literal[7]
+    scored_machine_count: Literal[100]
+    returned_machine_count: Literal[10]
+    machines: list[RankedMachine] = Field(min_length=10, max_length=10)
+    request_id: str
+    model_schema_version: str
+    model_version: str
+    research_only: Literal[True]
+    data_status: Literal["synthetic_azure_historical_demo"]
+    note: str

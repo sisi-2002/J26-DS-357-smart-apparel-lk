@@ -18,7 +18,7 @@ function mockResponse() {
 describe('Component 3 historical prediction page', () => {
   it('renders at the component route without displaying a preset probability', () => {
     const fetch = mockResponse(); renderPage();
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Understand machine risk');
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Machine Failure-Risk Explorer');
     expect(screen.getByLabelText('Synthetic data limitations')).toHaveTextContent('not real apparel-factory records');
     expect(screen.queryByTestId('failure-probability')).not.toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
@@ -39,7 +39,7 @@ describe('Component 3 historical prediction page', () => {
     const user = userEvent.setup();
     await user.selectOptions(screen.getByLabelText('Historical machine'), '100');
     await user.selectOptions(screen.getByLabelText('Prediction snapshot'), PREDICTION_TIMESTAMPS[12]);
-    await user.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await user.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(fetch).toHaveBeenCalledWith('/api/v1/component3/predict-risk', expect.objectContaining({
       body: JSON.stringify({ machine_id: 100, prediction_time: '2015-11-25T06:00:00' }),
     }));
@@ -48,7 +48,7 @@ describe('Component 3 historical prediction page', () => {
 
   it('renders actual response probability, evidence, limitations and provenance', async () => {
     mockResponse(); renderPage();
-    await userEvent.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(await screen.findByTestId('failure-probability')).toHaveTextContent('27.18%');
     expect(screen.getByTestId('evidence-H')).toHaveTextContent('42 days');
     expect(screen.getByTestId('evidence-M')).toHaveTextContent('3');
@@ -59,7 +59,7 @@ describe('Component 3 historical prediction page', () => {
     expect(screen.getByText(/This does not establish logging coverage/)).toBeInTheDocument();
     expect(screen.getByText(/not database freshness/)).toBeInTheDocument();
     expect(screen.getByText(/test fixture only/)).toBeInTheDocument();
-    await userEvent.click(screen.getByText('Prediction provenance'));
+    await userEvent.click(screen.getByText('Research details'));
     expect(screen.getByText('test-request')).toBeVisible();
   });
 
@@ -68,7 +68,7 @@ describe('Component 3 historical prediction page', () => {
     result.evidence_profile.H_observed_maintenance_span_days = null;
     result.evidence_profile.R_days_since_latest_maintenance = null;
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(result))); renderPage();
-    await userEvent.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(await screen.findByTestId('evidence-H')).toHaveTextContent('No prior maintenance observed');
     expect(screen.getByTestId('evidence-R')).toHaveTextContent('No prior maintenance observed');
   });
@@ -77,7 +77,7 @@ describe('Component 3 historical prediction page', () => {
     const pending = deferred<Response>();
     const fetch = vi.fn().mockReturnValue(pending.promise); vi.stubGlobal('fetch', fetch); renderPage();
     const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await user.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(screen.getByRole('status')).toHaveTextContent('Reading the historical snapshot');
     expect(screen.getByRole('button', { name: 'Predicting…' })).toBeDisabled();
     fireEvent.submit(screen.getByRole('button', { name: 'Predicting…' }).closest('form')!);
@@ -88,21 +88,21 @@ describe('Component 3 historical prediction page', () => {
 
   it.each([404, 422, 500, 503])('shows HTTP %i errors and allows a retry without a fallback result', async status => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ detail: 'API test error' }, status))); renderPage();
-    await userEvent.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Prediction unavailable');
     expect(screen.queryByTestId('failure-probability')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Predict failure risk/ })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /Predict selected machine/ })).toBeEnabled();
   });
 
   it('shows a network error', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch'))); renderPage();
-    await userEvent.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Cannot reach the prediction API');
   });
 
   it('clears a completed result when the selection changes', async () => {
     mockResponse(); renderPage();
-    await userEvent.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     await screen.findByTestId('failure-probability');
     await userEvent.selectOptions(screen.getByLabelText('Prediction snapshot'), PREDICTION_TIMESTAMPS[1]);
     expect(screen.queryByTestId('failure-probability')).not.toBeInTheDocument();
@@ -114,11 +114,11 @@ describe('Component 3 historical prediction page', () => {
       .mockResolvedValueOnce(jsonResponse(riskFixture({ machine_id: 2, predicted_failure_probability: 0.13 })));
     vi.stubGlobal('fetch', fetch); renderPage();
     const user = userEvent.setup();
-    await user.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await user.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     const firstSignal = (fetch.mock.calls[0][1] as RequestInit).signal;
     await user.selectOptions(screen.getByLabelText('Historical machine'), '2');
     expect(firstSignal?.aborted).toBe(true);
-    await user.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await user.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(await screen.findByTestId('failure-probability')).toHaveTextContent('13.00%');
     await act(async () => { pending.resolve(jsonResponse(riskFixture())); });
     expect(screen.getByTestId('failure-probability')).toHaveTextContent('13.00%');
@@ -128,14 +128,14 @@ describe('Component 3 historical prediction page', () => {
   it('aborts pending work on unmount', async () => {
     const pending = deferred<Response>(); const fetch = vi.fn().mockReturnValue(pending.promise);
     vi.stubGlobal('fetch', fetch); const rendered = renderPage();
-    await userEvent.click(screen.getByRole('button', { name: /Predict failure risk/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     const signal = (fetch.mock.calls[0][1] as RequestInit).signal;
     rendered.unmount(); expect(signal?.aborted).toBe(true);
     await act(async () => { pending.resolve(jsonResponse(riskFixture())); });
   });
 
   it('redirects the root to the prediction page', () => {
-    renderPage('/'); expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Understand machine risk');
+    renderPage('/'); expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Machine Failure-Risk Explorer');
   });
 
   it('has an accessible not-found route', async () => {

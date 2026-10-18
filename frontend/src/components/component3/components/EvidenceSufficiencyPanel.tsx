@@ -15,12 +15,13 @@ export default function EvidenceSufficiencyPanel({ profile }: { profile: Evidenc
       detail: 'Time since the most recent maintenance event, not database freshness.' },
   ];
   return <section className="panel evidence-panel" aria-labelledby="evidence-heading">
-    <div className="panel-heading"><div><span className="small-label">SUPPORTING CONTEXT</span>
-      <h2 id="evidence-heading">The evidence behind the snapshot</h2></div><span className="outline-tag">H / M / F / C / R</span></div>
+    <div className="evidence-heading"><h3 id="evidence-heading">Maintenance-evidence profile</h3>
+      <span>H / M / F / C / R</span></div>
     <p className="panel-description">These characteristics describe available history. They do not measure an individual prediction’s reliability.</p>
-    <dl className="evidence-list">{rows.map(row => <div className="evidence-row" key={row.key}>
-      <dt><span className="evidence-symbol" aria-hidden="true">{row.key}</span><span>{row.label}<small>{row.detail}</small></span></dt>
+    <dl className="evidence-grid">{rows.map(row => <div className="metric-card" key={row.key}>
+      <dt><span className="evidence-symbol" aria-hidden="true">{row.key}</span>{row.label}</dt>
       <dd data-testid={`evidence-${row.key}`}>{row.value}</dd>
+      <dd className="metric-explanation">{row.detail}</dd>
     </div>)}</dl>
   </section>;
 }

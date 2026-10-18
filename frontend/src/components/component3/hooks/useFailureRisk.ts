@@ -27,13 +27,17 @@ export function useFailureRisk() {
     request.current = null;
   }, []);
 
-  const predict = useCallback(async (body: FailureRiskRequest) => {
+  const predict = useCallback(async (body: FailureRiskRequest, ranking?: { modelVersion: string; probability: number }) => {
     if (request.current) return;
     const current = { id: ++serial.current, controller: new AbortController() };
     request.current = current;
     setState({ loading: true, result: null, error: null });
     try {
       const result = await predictFailureRisk(body, current.controller.signal);
+      if (ranking && (result.model_version !== ranking.modelVersion
+        || Math.abs(result.predicted_failure_probability - ranking.probability) > 0.000001)) {
+        throw new Error('The prediction no longer matches this ranking. Refresh the ranking and try again.');
+      }
       if (current.id === serial.current) setState({ loading: false, result, error: null });
     } catch (error) {
       if (current.id === serial.current && !current.controller.signal.aborted) {

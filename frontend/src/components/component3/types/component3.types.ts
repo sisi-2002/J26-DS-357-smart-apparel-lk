@@ -25,3 +25,23 @@ export interface FailureRiskResponse extends FailureRiskRequest {
   model_version: string;
   data_status: 'synthetic_azure_historical_demo';
 }
+
+export interface RankedMachine {
+  rank: number;
+  machine_id: number;
+  predicted_failure_probability: number;
+}
+
+export interface TopRiskMachinesResponse {
+  prediction_time: string;
+  horizon_days: 7;
+  scored_machine_count: 100;
+  returned_machine_count: 10;
+  machines: RankedMachine[];
+  request_id: string;
+  model_schema_version: string;
+  model_version: string;
+  research_only: true;
+  data_status: 'synthetic_azure_historical_demo';
+  note: string;
+}

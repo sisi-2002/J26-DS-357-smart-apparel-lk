@@ -1,19 +1,25 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import ErrorMessage from '../../../shared/components/ErrorMessage';
 import EvidenceSufficiencyPanel from '../components/EvidenceSufficiencyPanel';
 import FailureRiskCard from '../components/FailureRiskCard';
-import MachineSelector from '../components/MachineSelector';
-import PredictionDateSelector from '../components/PredictionDateSelector';
+import PredictionControls from '../components/PredictionControls';
+import ResearchDetails from '../components/ResearchDetails';
 import SyntheticDataNotice from '../components/SyntheticDataNotice';
+import TopRiskMachinesPanel from '../components/TopRiskMachinesPanel';
 import { MACHINE_IDS, PREDICTION_TIMESTAMPS } from '../data/demoOptions';
 import { useFailureRisk } from '../hooks/useFailureRisk';
+import { useTopRiskMachines } from '../hooks/useTopRiskMachines';
+import type { RankedMachine } from '../types/component3.types';
+import '../component3.css';
 
 export default function FailureRiskPredictionPage() {
   const [machineId, setMachineId] = useState(1);
   const [timestamp, setTimestamp] = useState<string>(PREDICTION_TIMESTAMPS[0]);
   const [inputError, setInputError] = useState<string | null>(null);
   const prediction = useFailureRisk();
+  const ranking = useTopRiskMachines();
+  const predictionHeading = useRef<HTMLHeadingElement>(null);
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -25,50 +31,50 @@ export default function FailureRiskPredictionPage() {
     void prediction.predict({ machine_id: machineId, prediction_time: timestamp });
   }
   function selectionChanged() { prediction.reset(); setInputError(null); }
+  function selectRankedMachine(machine: RankedMachine) {
+    if (!ranking.result || ranking.result.prediction_time.replace(' ', 'T') !== timestamp) return;
+    selectionChanged();
+    setMachineId(machine.machine_id);
+    void prediction.predict({ machine_id: machine.machine_id, prediction_time: timestamp }, {
+      modelVersion: ranking.result.model_version, probability: machine.predicted_failure_probability,
+    });
+    if (window.matchMedia?.('(max-width: 1199px)').matches) {
+      predictionHeading.current?.focus({ preventScroll: true });
+      predictionHeading.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }
+  }
 
-  return <div className="prediction-page">
+  return <div className="prediction-page machine-risk-explorer">
     <div className="page-heading"><div><span className="eyebrow">COMPONENT 03 / PREDICTIVE MAINTENANCE</span>
-      <h1>Understand machine risk.</h1><p>Explore a historical prediction. See the maintenance evidence that supports it.</p></div>
+      <h1>Machine Failure-Risk Explorer</h1><p>Compare historical machine risk, then explore the evidence behind a prediction.</p></div>
       <div className="period-stamp"><strong>2015</strong><span>HISTORICAL BENCHMARK</span></div></div>
     <SyntheticDataNotice />
-    <div className="prediction-grid">
-      <div><section className="panel input-panel" aria-labelledby="input-heading">
-        <div className="panel-heading"><div><span className="small-label">01 / SELECT A SNAPSHOT</span>
-          <h2 id="input-heading">Prediction inputs</h2></div></div>
-        <form onSubmit={submit}>
-          <MachineSelector value={machineId} onChange={value => { selectionChanged(); setMachineId(value); }} />
-          <PredictionDateSelector value={timestamp} onChange={value => { selectionChanged(); setTimestamp(value); }} />
-          <div className="horizon-description"><span>Prediction horizon</span><strong>7 days <span aria-hidden="true">↗</span></strong></div>
-          <button className="predict-button" type="submit" disabled={prediction.loading}>
-            {prediction.loading ? <><span className="spinner" aria-hidden="true" /> Predicting…</> : <>Predict failure risk <span aria-hidden="true">→</span></>}
-          </button>
-          <p className="form-caption">Uses the saved, calibrated model. No retraining.</p>
-        </form>
-      </section><div className="method-note"><span className="small-label">HOW TO READ THIS</span>
-        <p>Failure probability and maintenance evidence answer different questions. Review them together; neither is a maintenance instruction.</p></div></div>
-      <div className="results-column" aria-busy={prediction.loading}>
+    <PredictionControls machineId={machineId} timestamp={timestamp}
+      predicting={prediction.loading} comparing={ranking.loading} onPredict={submit}
+      onCompare={() => { void ranking.rank(timestamp); }}
+      onMachineChange={value => { selectionChanged(); setMachineId(value); }}
+      onDateChange={value => { selectionChanged(); ranking.reset(); setTimestamp(value); }} />
+    <div className="explorer-grid">
+      <TopRiskMachinesPanel predictionTime={timestamp} selectedMachineId={machineId}
+        loading={ranking.loading} error={ranking.error} result={ranking.result}
+        onSelect={selectRankedMachine} />
+      <section className="panel selected-machine-panel" aria-labelledby="selected-prediction-heading" aria-busy={prediction.loading}>
+        <div className="dashboard-panel-heading"><div><span className="small-label">02 / EXPLORE A MACHINE</span>
+          <h2 id="selected-prediction-heading" tabIndex={-1} ref={predictionHeading}>Selected Machine Prediction</h2></div></div>
         {(inputError || prediction.error) && <ErrorMessage message={inputError || prediction.error!} />}
-        {prediction.loading && <section className="panel loading-state" role="status"><span className="spinner" aria-hidden="true" />
-          <h2>Reading the historical snapshot</h2><p>Requesting a prediction from the saved model…</p></section>}
-        {!prediction.loading && !prediction.result && <section className="panel empty-state">
-          <div className="empty-emblem" aria-hidden="true"><span>07</span><small>DAYS</small></div>
-          <span className="small-label">02 / EXPLORE THE RESULT</span><h2>Your historical snapshot starts here.</h2>
-          <p>Select a machine and prediction date, then request its seven-day failure probability and maintenance-evidence profile.</p>
-          <div className="empty-steps"><span>Choose a snapshot</span><span aria-hidden="true">→</span><span>Predict</span><span aria-hidden="true">→</span><span>Review evidence</span></div>
-        </section>}
+        {prediction.loading && <div className="prediction-loading" role="status"><span className="spinner" aria-hidden="true" />
+          <div><h3>Reading the historical snapshot</h3><p>Requesting Machine {String(machineId).padStart(3, '0')}’s prediction from the saved model…</p></div></div>}
+        {!prediction.loading && !prediction.result && !prediction.error && !inputError && <div className="dashboard-empty prediction-empty">
+          <h3>Choose a machine to explore</h3>
+          <p>Use <strong>Predict selected machine</strong> above, or compare machines and choose <strong>View</strong> in the Top 10.</p>
+          <p className="empty-footnote">Comparison does not automatically request a prediction.</p>
+        </div>}
         {prediction.result && <div className="prediction-result" aria-live="polite">
           <FailureRiskCard result={prediction.result} />
           <EvidenceSufficiencyPanel profile={prediction.result.evidence_profile} />
-          <section className="result-note"><strong>Keep this result in context</strong><p>{prediction.result.note}</p>
-            <details><summary>Prediction provenance</summary><dl className="provenance">
-              <dt>Calibration</dt><dd>{prediction.result.calibration}</dd>
-              <dt>Model schema</dt><dd>{prediction.result.model_schema_version}</dd>
-              <dt>Model artifact</dt><dd>{prediction.result.model_version}</dd>
-              <dt>Request ID</dt><dd>{prediction.result.request_id}</dd>
-              <dt>Data status</dt><dd>{prediction.result.data_status}</dd>
-            </dl></details></section>
         </div>}
-      </div>
+      </section>
     </div>
+    <ResearchDetails prediction={prediction.result} ranking={ranking.result} />
   </div>;
 }

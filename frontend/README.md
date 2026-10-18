@@ -157,7 +157,9 @@ frontend/
   tsconfig.json
   vite.config.ts
   playwright.config.ts
+  e2e/dashboard-layout.spec.ts
   e2e/prediction.spec.ts
+  e2e/top-risk-machines.spec.ts
   src/main.tsx
   src/vite-env.d.ts
   src/app/App.tsx
@@ -167,22 +169,112 @@ frontend/
   src/shared/api/apiClient.test.ts
   src/shared/components/ErrorMessage.tsx
   src/shared/layouts/MainLayout.tsx
+  src/components/component3/component3.css
   src/components/component3/routes.tsx
   src/components/component3/api/failureRiskApi.ts
   src/components/component3/api/failureRiskApi.test.ts
+  src/components/component3/api/topRiskMachinesApi.ts
+  src/components/component3/api/topRiskMachinesApi.test.ts
   src/components/component3/types/component3.types.ts
   src/components/component3/data/demoOptions.ts
   src/components/component3/hooks/useFailureRisk.ts
+  src/components/component3/hooks/useTopRiskMachines.ts
   src/components/component3/pages/FailureRiskPredictionPage.tsx
   src/components/component3/pages/FailureRiskPredictionPage.test.tsx
+  src/components/component3/pages/TopRiskMachines.test.tsx
+  src/components/component3/pages/DashboardLayout.test.tsx
+  src/components/component3/components/PredictionControls.tsx
+  src/components/component3/components/ResearchDetails.tsx
   src/components/component3/components/MachineSelector.tsx
   src/components/component3/components/PredictionDateSelector.tsx
   src/components/component3/components/FailureRiskCard.tsx
   src/components/component3/components/EvidenceSufficiencyPanel.tsx
   src/components/component3/components/SyntheticDataNotice.tsx
+  src/components/component3/components/TopRiskMachinesPanel.tsx
   src/test/setup.ts
   src/test/fixtures.ts
 ```
 
 Local `.env.local`, installed packages, production assets and browser-test outputs
 are ignored generated/local files, not part of the source inventory above.
+
+## Top 10 Highest-Risk Machines
+
+The prediction page now also offers **Compare all 100 machines** for the date selected
+in Prediction snapshot. This sends one timestamp-only request to
+`POST /api/v1/component3/top-risk-machines`; it does not issue 100 individual
+requests. All results come from the saved calibrated model on the backend.
+
+The table retains the backend's ordering and displays the returned probabilities
+as percentages. Backend ordering uses unrounded probabilities, so equal display
+values need not be sorted by machine ID. No severity thresholds are added. The
+ranking is explicitly relative to the 100 machines in the synthetic Azure
+benchmark at this historical date, not a reliability assessment or maintenance
+recommendation.
+
+Each **View** button selects the machine and requests its full prediction and
+H/M/F/C/R profile through the existing endpoint. All ten ranking rows remain while
+switching machines on the same date. Date changes clear both outputs and abort
+outdated requests. Late ranking replies are ignored even if cancellation is not
+honored. Detail responses must match the ranked probability and model identity;
+otherwise the page asks for a refreshed ranking instead of associating mismatched
+evidence. Null H/R handling and the original individual workflow remain intact.
+
+New unit tests cover ranking response validation, ordering, request count, row
+selection, loading, retry, cancellation and model mismatch. The existing real
+browser command also runs the new ranking suite: desktop verifies evidence for
+all ten ranked machines, and mobile verifies switching between two while retaining
+the list. Both suites use the real API and no model mocks. Existing individual
+prediction browser tests remain included.
+
+The Vite proxy and environment variables require no changes. Restart the backend
+to load the new route. If standard ports are already occupied, a separate test
+instance can use `uvicorn ... --port 8001`, `API_PROXY_TARGET=http://127.0.0.1:8001`,
+`npm run dev -- --port 5174`, and `E2E_BASE_URL=http://127.0.0.1:5174`; this avoids
+stopping another developer's servers.
+
+## Dashboard layout and visual verification
+
+The page title is **Machine Failure-Risk Explorer**. Its full-width controls share
+one historical date between direct prediction and comparison, with a fixed 7-day
+horizon. Direct prediction works without requesting a ranking. Comparison never
+automatically changes the machine selector or requests an individual prediction.
+
+On desktop, Top 10 Machines and Selected Machine Prediction occupy approximately
+40% and 60% of the result area. At tablet/mobile widths they stack, with compact
+empty states and no stretched blank prediction card. View selects a ranked machine,
+requests its existing detailed prediction, and highlights the selector's machine
+in the ranking. Ranking rows remain when switching machines at the same date.
+On stacked layouts, explicit View actions focus and reveal the prediction heading.
+Changing dates retains the existing reset/cancellation/stale-response behavior.
+
+The five evidence indicators are metric cards, including unchanged H/C/R caveats
+and null handling. The synthetic historical disclaimer is always rendered and
+sticks during dashboard scrolling. Research details is a native keyboard-operable
+disclosure, initially collapsed, containing separate prediction/ranking notes and
+provenance. Model hashes and request IDs are not shown outside that disclosure.
+Shared sidebar branding remains in MainLayout; feature presentation is scoped in
+component3.css. Existing API clients, request hooks and contracts are unchanged.
+
+The dashboard browser suite checks empty, ranking-only and selected-prediction
+states at 1440px, 1024px and 390px widths. It also checks that comparison sends no
+individual prediction request, selected rows are highlighted, the disclaimer stays
+visible after scrolling, Research details supports keyboard expansion, and the
+page has no horizontal overflow. Existing real prediction/ranking tests remain.
+Run `npm run test:e2e` with both servers running. Its generated screenshots are:
+
+```text
+test-results/dashboard/desktop-empty.png
+test-results/dashboard/desktop-ranking-only.png
+test-results/dashboard/desktop-selected-prediction.png
+test-results/dashboard/tablet-empty.png
+test-results/dashboard/tablet-ranking-only.png
+test-results/dashboard/tablet-selected-prediction.png
+test-results/dashboard/mobile-empty.png
+test-results/dashboard/mobile-ranking-only.png
+test-results/dashboard/mobile-selected-prediction.png
+```
+
+These screenshots and all browser outputs remain ignored by Git. The next browser
+run replaces them. No backend, research, model or API changes are needed for this
+presentation redesign.

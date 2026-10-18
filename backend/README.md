@@ -131,3 +131,41 @@ demonstration with no authentication, persistence, frontend, survival/SHAP outpu
 or validated N2 reliability mapping. Group migration and database ownership can
 remain separate from this inference milestone. Register the Component 3 router
 only once: it already includes `/api/v1/component3`.
+
+## Top 10 relative machine-risk ranking
+
+`POST /api/v1/component3/top-risk-machines` accepts only the historical timestamp:
+
+```json
+{"prediction_time": "2015-09-02T06:00:00"}
+```
+
+It reuses the cached model and source frames, builds all 100 rows through the
+unchanged research `machine_features(...)` function, and makes **one** batch
+`predict_proba(...)` call. It uses no future labels and never fits an estimator.
+The configured benchmark must contain exactly IDs 1–100; an incomplete or different
+machine set produces HTTP 503, not a partial ranking.
+
+The response contains `machines`, a ten-item list of `rank`, `machine_id`, and
+`predicted_failure_probability`, plus the timestamp, `horizon_days: 7`,
+`scored_machine_count: 100`, `returned_machine_count: 10`, request ID, model/schema
+identity, synthetic/research flags and interpretation note. Ranking uses raw
+probabilities descending, with ascending machine ID for exact raw ties. Only after
+ranking are returned probabilities rounded to six decimals, matching the existing
+individual endpoint. Equal serialized probabilities do not establish a true tie.
+Invalid model output produces HTTP 500 without returning a partial list. The
+timestamp and error handling retain the original historical demo restrictions.
+
+This is a relative comparison among 100 synthetic Azure machines at one historical
+snapshot. It does not establish a risk threshold, individual reliability score,
+apparel-factory validity or maintenance recommendation. For a selected ranked
+machine, the frontend calls the existing `/predict-risk` endpoint to obtain its
+unchanged H/M/F/C/R profile.
+
+`test_top_risk_machines.py` extends the existing test suite with 100-machine/one-call
+verification, complete-cohort checks, rounding/tie cases, errors, cached-resource
+reuse, batch/individual parity across all 100 actual machines, and strict-past
+ranking invariance. The inherited no-fitting guards remain active. Configure the
+existing model/data environment variables to run all actual-artifact tests with
+the same pytest command documented above. Restart the backend after pulling this
+change so the new endpoint is registered.

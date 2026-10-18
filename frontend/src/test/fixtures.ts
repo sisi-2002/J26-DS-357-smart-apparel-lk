@@ -1,4 +1,4 @@
-import type { FailureRiskResponse } from '../components/component3/types/component3.types';
+import type { FailureRiskResponse, TopRiskMachinesResponse } from '../components/component3/types/component3.types';
 
 /** Test-only data. Never imported by application code or used as a fallback. */
 export function riskFixture(overrides: Partial<FailureRiskResponse> = {}): FailureRiskResponse {
@@ -18,6 +18,21 @@ export function riskFixture(overrides: Partial<FailureRiskResponse> = {}): Failu
 
 export function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+}
+
+/** Contrived test-only ranking, unrelated to the real benchmark probabilities. */
+export function rankingFixture(overrides: Partial<TopRiskMachinesResponse> = {}): TopRiskMachinesResponse {
+  return {
+    prediction_time: '2015-09-02T06:00:00', horizon_days: 7,
+    scored_machine_count: 100, returned_machine_count: 10,
+    machines: Array.from({ length: 10 }, (_, index) => ({
+      rank: index + 1, machine_id: 20 - index, predicted_failure_probability: Number((0.8 - index * 0.05).toFixed(6)),
+    })),
+    request_id: 'test-ranking', model_schema_version: 'c3-pdm-7day-v1', model_version: 'sha256:test-only',
+    research_only: true, data_status: 'synthetic_azure_historical_demo',
+    note: 'Relative ranking of 100 synthetic Azure machines. Test fixture only; no maintenance advice.',
+    ...overrides,
+  };
 }
 
 export function deferred<T>() {
