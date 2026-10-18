@@ -28,3 +28,7 @@ Thumbs.db
 
 # Optional: keep a placeholder if needed
 # !models/.gitkeep
+
+# React frontend dependencies and build output
+frontend/node_modules/
+frontend/dist/

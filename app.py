@@ -2,7 +2,7 @@
 import json
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 import joblib
 import pandas as pd
 from historical_capacity import build_historical_capacity_plan
@@ -18,6 +18,18 @@ from research_analysis import (
 from factory_config import FACTORY_SHIFTS_PER_DAY
 
 app = Flask(__name__)
+
+
+@app.after_request
+def add_local_frontend_cors(response):
+    """Allow the Vite development server to call the JSON prediction endpoint."""
+    origin = request.headers.get("Origin")
+    if origin in {"http://localhost:5173", "http://127.0.0.1:5173"}:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+        response.headers["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+    return response
 
 # Completed orders are the source for the historical throughput benchmark.
 orders_data = pd.read_csv("data/orders.csv")
@@ -91,7 +103,24 @@ def home():
 #  Prediction endpoint: evaluate the order and present the recommended action.
 @app.route("/predict", methods=["POST"])
 def predict():
-    form = request.form
+    wants_json = request.is_json or request.headers.get("Accept") == "application/json"
+    form = request.get_json(silent=True) if request.is_json else request.form
+    form = form or {}
+
+    def invalid(message, status=400):
+        if wants_json:
+            return jsonify({"error": message}), status
+        return render_template("index.html",
+                               quantity=form.get("order_quantity", "10000"),
+                               handover_days=form.get("handover_days", "10"),
+                               smv=form.get("required_smv_total", "12.5"),
+                               order_value=form.get("order_value", "2500000"),
+                               style=form.get("style", "Polo"),
+                               priority=form.get("priority", "Normal"),
+                               available_lines=form.get("available_lines", "4"),
+                               available_shifts=FACTORY_SHIFTS_PER_DAY,
+                               error=message), status
+
     try:
         qty = int(form.get("order_quantity", ""))
         days = int(form.get("handover_days", ""))
@@ -103,33 +132,14 @@ def predict():
         style = form.get("style", "")
         priority = form.get("priority", "")
     except (TypeError, ValueError):
-        return render_template("index.html", quantity=form.get("order_quantity", "10000"),
-                               handover_days=form.get("handover_days", "10"),
-                               smv=form.get("required_smv_total", "12.5"),
-                               order_value=form.get("order_value", "2500000"),
-                               style=form.get("style", "Polo"), priority=form.get("priority", "Normal"),
-                               available_lines=form.get("available_lines", "4"),
-                               available_shifts=FACTORY_SHIFTS_PER_DAY,
-                               error="Enter valid numeric values for quantity, days, lines, SMV and order value."), 400
+        return invalid("Enter valid numeric values for quantity, days, lines, SMV and order value.")
 
     if qty <= 0 or days <= 0 or smv <= 0 or order_value <= 0:
-        return render_template("index.html", quantity=qty, handover_days=days,
-                               smv=smv, order_value=order_value, style=style, priority=priority,
-                               available_lines=available_lines,
-                               available_shifts=available_shifts,
-                               error="Quantity, handover days, SMV and order value must be greater than zero."), 400
+        return invalid("Quantity, handover days, SMV and order value must be greater than zero.")
     if available_lines < 1 or available_lines > 30:
-        return render_template("index.html", quantity=qty, handover_days=days,
-                               smv=smv, order_value=order_value, style=style, priority=priority,
-                               available_lines=available_lines,
-                               available_shifts=available_shifts,
-                               error="Available sewing lines must be from 1 to 30."), 400
+        return invalid("Available sewing lines must be from 1 to 30.")
     if style not in {"Polo", "T-Shirt", "Hoodie", "Legging", "Jacket"} or priority not in {"Low", "Normal", "High"}:
-        return render_template("index.html", quantity=qty, handover_days=days,
-                               smv=smv, order_value=order_value, style="Polo", priority="Normal",
-                                available_lines=available_lines,
-                                available_shifts=available_shifts,
-                                error="Choose a valid style and priority."), 400
+        return invalid("Choose a valid style and priority.")
 
     production_plan = build_historical_capacity_plan(
         orders_data, qty, days, smv, style, available_lines,
@@ -137,10 +147,7 @@ def predict():
         priority=priority, capacity_model=capacity_model,
     )
     if production_plan.get("error"):
-        return render_template("index.html", quantity=qty, handover_days=days,
-                               smv=smv, order_value=order_value, style=style, priority=priority,
-                               available_lines=available_lines, available_shifts=available_shifts,
-                               error=production_plan["error"]), 400
+        return invalid(production_plan["error"])
     n1_analysis = predict_line_feasibility(
         line_model, training_report.get("line_model_metrics"),
         qty, days, smv, order_value, style, priority,
@@ -166,19 +173,28 @@ def predict():
         production_plan["machine_note"],
     ]
 
-    return render_template("result.html",
-                           order_quantity=qty,
-                           handover_days=days,
-                           estimated_smv=smv,
-                           estimated_order_value=order_value,
-                           estimated_workload=qty * smv,
-                           capacity_ratio=capacity_ratio,
-                           style=style,
-                           priority=priority,
-                           production_plan=production_plan,
-                           n1_analysis=n1_analysis,
-                           n2_analysis=n2_analysis,
-                           decision=decision, explanation=explanation)
+    result = {
+        "order_quantity": qty,
+        "handover_days": days,
+        "estimated_smv": smv,
+        "estimated_order_value": order_value,
+        "estimated_workload": qty * smv,
+        "capacity_ratio": capacity_ratio,
+        "style": style,
+        "priority": priority,
+        "production_plan": production_plan,
+        "n1_analysis": n1_analysis,
+        "n2_analysis": n2_analysis,
+        "decision": decision,
+        "explanation": explanation,
+        "workforce": {
+            "available": False,
+            "message": "The current backend has no live worker allocation endpoint. The displayed staffing plan is a required grade mix, not named worker recommendations.",
+        },
+    }
+    if wants_json:
+        return jsonify(result)
+    return render_template("result.html", **result)
 
 #  Start the Flask app for local prediction testing.
 if __name__ == "__main__":
