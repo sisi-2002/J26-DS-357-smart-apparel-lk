@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.joblib
+*.pkl
+*.csv
+*.log
+models/
+datasets/
+raw/
+outputs*/
