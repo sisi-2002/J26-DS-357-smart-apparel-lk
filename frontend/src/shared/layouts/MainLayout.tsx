@@ -10,6 +10,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       <div className="nav-label">RESEARCH WORKSPACE</div>
       <nav aria-label="Main navigation"><NavLink to="/component3/predict-risk">
         <span aria-hidden="true">◈</span> Machine risk <span className="nav-number">03</span>
+      </NavLink><NavLink to="/component3/evidence-study">
+        <span aria-hidden="true">≋</span> Evidence study
       </NavLink></nav>
       <div className="sidebar-note"><span className="small-label">COMPONENT 03</span>
         <p>Reliability-aware<br />predictive maintenance</p>

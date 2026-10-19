@@ -278,3 +278,67 @@ test-results/dashboard/mobile-selected-prediction.png
 These screenshots and all browser outputs remain ignored by Git. The next browser
 run replaces them. No backend, research, model or API changes are needed for this
 presentation redesign.
+
+## Function 2 / N2 offline evidence study
+
+Open `/component3/evidence-study` or **Evidence study** in the sidebar. This page
+uses the small, source-controlled aggregate snapshot
+`src/components/component3/data/n2Study.snapshot.json`. It works with the normal
+frontend start/build commands on a clean checkout: no ignored experiment CSVs,
+raw dataset, Python environment, saved ML model or FastAPI server is required to
+view N2. The reviewed JSON must be included with the new source files when you
+eventually commit; it is intentionally **not** ignored. No per-machine research
+rows are copied into the frontend and no model is fitted or invoked by the page.
+
+N2 uses the **original uncalibrated, separately refitted pilot classifiers**.
+Function 1 continues to use its separate calibrated 7-day inference API. Brier
+score measures the original failure predictions' mean squared loss. The later
+MAE/RMSE/R² comparisons evaluate **second-stage loss estimation**. Risk-only had
+slightly lower MAE than full risk-plus-evidence in all three conditions; this
+negative finding is shown. H does not establish logging coverage, R is maintenance
+event recency rather than database freshness, and C is constant 100%, excluded
+from relationship fitting. Four quantile groups for 90-day F are preserved.
+
+Only regeneration requires the existing local saved results under
+`research/component3/outputs_corrected`, `outputs_n2_continuous`, and
+`outputs_n2_incremental`. From the repository root in Windows CMD:
+
+```cmd
+python -B frontend\scripts\export_n2_study.py --check
+python -B frontend\scripts\export_n2_study.py
+python -B -m unittest discover -s frontend\scripts -p test_export_n2_study.py -v
+```
+
+The first command verifies sources and the current snapshot without writing. The
+second regenerates it; review the resulting diff. `--source-dir` accepts another
+Component 3 research-results directory, and `--output` selects a different JSON
+destination. The exporter uses only the Python standard library (also works with
+`python -S -B ...`), imports no research or ML code, and validates paired labels,
+squared losses, evidence aliases, constant C, quantile groups, descriptive
+correlations, OOF machine folds, saved metrics and deltas. Missing or inconsistent
+sources fail with a nonzero exit code before replacing the output. Provenance
+records source-relative filenames, row counts, byte sizes and SHA-256 hashes.
+
+Normal `npm test` checks the included snapshot without local research outputs.
+The separate Python regeneration tests explicitly skip when sources are absent.
+N2 browser tests block API access and verify all 12 history/evidence selections,
+numbers, four-group F, provenance, navigation, keyboard focus and no page overflow
+at desktop/tablet/mobile widths. Screenshots are generated under
+`test-results/evidence-study/{desktop,tablet,mobile}-{overview,90day-f}.png`.
+Run against Vite with both servers for the full Function 1 + N2 regression suite:
+
+```cmd
+cd /d E:\J26-DS-357-smart-apparel-lk\frontend
+npm test
+npm run build
+npm run test:e2e
+```
+
+To verify N2 on the **production bundle without backend access**, start
+`npm run preview` in one CMD window, then use another:
+
+```cmd
+cd /d E:\J26-DS-357-smart-apparel-lk\frontend
+set E2E_BASE_URL=http://127.0.0.1:4173
+npm run test:e2e -- evidence-study.spec.ts
+```
