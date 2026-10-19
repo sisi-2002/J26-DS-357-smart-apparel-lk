@@ -1,13 +1,15 @@
 # Python cache
-__pycache__/
+backend/__pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 
 # Virtual environments
-venv/
-.env/
-.venv/
+backend/venv/
+backend/.venv/
+backend/.env
+backend/.env.*
+!backend/.env.example
 
 # IDE/editor
 .vscode/
@@ -15,19 +17,14 @@ venv/
 *.swp
 
 # Jupyter
-.ipynb_checkpoints/
+backend/.ipynb_checkpoints/
 
 # OS files
 .DS_Store
 Thumbs.db
 
 # Project generated artifacts
-#models/
-
-
-
-# Optional: keep a placeholder if needed
-# !models/.gitkeep
+backend/models/
 
 # React frontend dependencies and build output
 frontend/node_modules/
