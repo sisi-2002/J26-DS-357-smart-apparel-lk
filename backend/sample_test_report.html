@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order Planning App - Sample Test Report</title>
+<style>
+body{font:15px/1.55 Arial,sans-serif;margin:0;background:#f3f6fa;color:#172b3d}.wrap{max-width:1200px;margin:28px auto;padding:0 18px}h1,h2{color:#123d60}.card{background:white;border:1px solid #dce5ed;border-radius:12px;padding:18px;margin:16px 0}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}.tile{background:#f4f8fb;padding:12px;border-radius:8px}.tile b{display:block;font-size:20px;color:#1263a3}.tablebox{overflow:auto}table{border-collapse:collapse;width:100%;min-width:1000px}th,td{padding:9px;border-bottom:1px solid #e4ebf0;text-align:left;white-space:nowrap}th{background:#eaf1f6;position:sticky;top:0}.yes{color:#a32a37;font-weight:bold}.no{color:#167344;font-weight:bold}.note{background:#fff6e5;border-left:4px solid #d89b20;padding:12px}.bad{background:#fff0ef;border-left:4px solid #c43a3a;padding:12px}.muted{color:#596d7d;font-size:13px}code{background:#edf2f6;padding:2px 5px;border-radius:4px}</style>
+</head><body><main class="wrap">
+<h1>Order Planning System Test Report</h1>
+<p>Tested the <a href="http://127.0.0.1:5000/">order entry page</a> and its results page. Entered 24 test cases individually and recorded the acceptance probability, decision, and production capacity plan.</p>
+<section class="card"><h2>Key Results</h2><div class="summary">
+<div class="tile"><b>24</b>Test cases</div><div class="tile"><b>0.73% – 100%</b>Observed probability range</div><div class="tile"><b>0.810</b>ROC-AUC shown on the page</div><div class="tile"><b>0.111</b>Brier score shown on the page</div><div class="tile"><b>3</b>Cases requiring replanning according to the system</div></div>
+<p class="note"><b>About the probability range:</b> None of these test cases resulted in an exact 0% probability. The lowest result was 0.73%, and the highest was 100%. This shows that probabilities across the full 0–100% range are possible, but it does not mean every value in that range was tested accurately.</p>
+<p class="bad"><b>Important finding:</b> In three cases, the system showed an acceptance probability of 89.95%–95.00%, but the capacity plan indicated that production could not be completed within the available time, so it had to be replanned. Therefore, an “Accept” decision does not guarantee completion by the deadline. The results should present two separate decisions: order acceptance likelihood and production capacity.</p>
+</section>
+<section class="card"><h2>Test Results</h2><div class="tablebox"><table><thead><tr><th>#</th><th>Quantity</th><th>Days</th><th>Lines</th><th>SMV</th><th>Garment type</th><th>Priority</th><th>Acceptance probability</th><th>Decision</th><th>Estimated completion day</th><th>Replan?</th></tr></thead><tbody>
+<tr><td>1</td><td>1,000</td><td>60</td><td>30</td><td>5.00</td><td>T-Shirt</td><td>Low</td><td>100.00%</td><td>Accept</td><td>5</td><td class="no">No</td></tr>
+<tr><td>2</td><td>5,000</td><td>30</td><td>20</td><td>8.00</td><td>Legging</td><td>Low</td><td>100.00%</td><td>Accept</td><td>29</td><td class="no">No</td></tr>
+<tr><td>3</td><td>10,000</td><td>20</td><td>10</td><td>10.00</td><td>Polo</td><td>Normal</td><td>100.00%</td><td>Accept</td><td>5</td><td class="no">No</td></tr>
+<tr><td>4</td><td>10,000</td><td>10</td><td>4</td><td>12.30</td><td>Polo</td><td>Normal</td><td>95.94%</td><td>Accept</td><td>7</td><td class="no">No</td></tr>
+<tr><td>5</td><td>10,000</td><td>7</td><td>1</td><td>12.30</td><td>Polo</td><td>Normal</td><td>68.18%</td><td>Reject</td><td>18</td><td class="yes">Yes</td></tr>
+<tr><td>6</td><td>30,000</td><td>20</td><td>8</td><td>15.00</td><td>Jacket</td><td>High</td><td>92.55%</td><td>Accept</td><td>19</td><td class="no">No</td></tr>
+<tr><td>7</td><td>50,000</td><td>10</td><td>4</td><td>20.00</td><td>Hoodie</td><td>High</td><td>21.66%</td><td>Reject</td><td>47</td><td class="yes">Yes</td></tr>
+<tr><td>8</td><td>100,000</td><td>5</td><td>2</td><td>25.00</td><td>Jacket</td><td>High</td><td>1.07%</td><td>Reject</td><td>204</td><td class="yes">Yes</td></tr>
+<tr><td>9</td><td>100,000</td><td>1</td><td>1</td><td>30.00</td><td>Hoodie</td><td>High</td><td>0.73%</td><td>Reject</td><td>553</td><td class="yes">Yes</td></tr>
+<tr><td>10</td><td>2,000</td><td>10</td><td>2</td><td>8.00</td><td>T-Shirt</td><td>Low</td><td>100.00%</td><td>Accept</td><td>8</td><td class="no">No</td></tr>
+<tr><td>11</td><td>25,000</td><td>15</td><td>6</td><td>12.30</td><td>Polo</td><td>Normal</td><td>92.90%</td><td>Accept</td><td>18</td><td class="yes">Yes</td></tr>
+<tr><td>12</td><td>75,000</td><td>30</td><td>15</td><td>18.00</td><td>Legging</td><td>Normal</td><td>84.42%</td><td>Accept</td><td>30</td><td class="no">No</td></tr>
+<tr><td>13</td><td>50,000</td><td>20</td><td>12</td><td>6.00</td><td>T-Shirt</td><td>Low</td><td>99.81%</td><td>Accept</td><td>20</td><td class="no">No</td></tr>
+<tr><td>14</td><td>10,000</td><td>5</td><td>6</td><td>10.00</td><td>Polo</td><td>High</td><td>95.00%</td><td>Accept</td><td>6</td><td class="yes">Yes</td></tr>
+<tr><td>15</td><td>30,000</td><td>7</td><td>3</td><td>12.30</td><td>Jacket</td><td>Normal</td><td>52.48%</td><td>Reject</td><td>21</td><td class="yes">Yes</td></tr>
+<tr><td>16</td><td>15,000</td><td>14</td><td>5</td><td>9.00</td><td>Legging</td><td>Low</td><td>99.13%</td><td>Accept</td><td>9</td><td class="no">No</td></tr>
+<tr><td>17</td><td>90,000</td><td>10</td><td>8</td><td>22.00</td><td>Hoodie</td><td>High</td><td>5.23%</td><td>Reject</td><td>46</td><td class="yes">Yes</td></tr>
+<tr><td>18</td><td>5,000</td><td>3</td><td>1</td><td>18.00</td><td>Jacket</td><td>High</td><td>60.45%</td><td>Reject</td><td>15</td><td class="yes">Yes</td></tr>
+<tr><td>19</td><td>100,000</td><td>30</td><td>30</td><td>5.00</td><td>T-Shirt</td><td>Low</td><td>100.00%</td><td>Accept</td><td>10</td><td class="no">No</td></tr>
+<tr><td>20</td><td>40,000</td><td>14</td><td>10</td><td>14.00</td><td>Polo</td><td>Normal</td><td>89.95%</td><td>Accept</td><td>19</td><td class="yes">Yes</td></tr>
+<tr><td>21</td><td>20,000</td><td>7</td><td>15</td><td>16.00</td><td>Hoodie</td><td>High</td><td>98.11%</td><td>Accept</td><td>7</td><td class="no">No</td></tr>
+<tr><td>22</td><td>80,000</td><td>21</td><td>4</td><td>12.00</td><td>Legging</td><td>Normal</td><td>11.85%</td><td>Reject</td><td>78</td><td class="yes">Yes</td></tr>
+<tr><td>23</td><td>1,000</td><td>2</td><td>1</td><td>30.00</td><td>Jacket</td><td>High</td><td>61.54%</td><td>Reject</td><td>5</td><td class="yes">Yes</td></tr>
+<tr><td>24</td><td>250,000</td><td>60</td><td>30</td><td>8.00</td><td>T-Shirt</td><td>Low</td><td>31.37%</td><td>Reject</td><td>59</td><td class="no">No</td></tr>
+</tbody></table></div><p class="muted">SMV values were entered in MM.SS format. The system automatically used two shifts per day. The report shows results returned by the local app at the time of testing.</p></section>
+<section class="card"><h2>Findings and Recommended Next Steps</h2><ol><li>Acceptance probability and production capacity are calculated separately. A high probability does not necessarily mean production can be completed by the deadline; the results page should clearly distinguish these two outcomes.</li><li>In cases 1 and 2, the completion estimates are close to the requested 60- and 30-day deadlines, but no “Replan” message appears. Continue checking whether completion on or after the deadline should trigger a warning.</li><li>Showing edge values such as 100% and 0.73% does not confirm that the probabilities are accurate. The current data were prepared only for demonstration. Validate the model using real factory acceptance and rejection records.</li><li>These test results apply only to the app, model, and data used at the time of testing. They are not a guarantee of real-world production outcomes.</li></ol></section>
+<p class="muted">File: sample_test_report.html · App: <code>http://127.0.0.1:5000/</code></p>
+</main></body></html>

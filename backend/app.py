@@ -7,6 +7,7 @@ import joblib
 import pandas as pd
 from historical_capacity import build_historical_capacity_plan
 from line_model_features import (
+    FEASIBILITY_MODEL_TARGET,
     LINE_MODEL_FEATURES,
     historical_line_count,
     make_line_features,
@@ -18,6 +19,7 @@ from research_analysis import (
 from factory_config import FACTORY_SHIFTS_PER_DAY
 
 app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 @app.after_request
@@ -32,8 +34,8 @@ def add_local_frontend_cors(response):
     return response
 
 # Completed orders are the source for the historical throughput benchmark.
-orders_data = pd.read_csv("data/orders.csv")
-interventions_data = pd.read_csv("data/interventions.csv")
+orders_data = pd.read_csv(os.path.join(BASE_DIR, "data", "orders.csv"))
+interventions_data = pd.read_csv(os.path.join(BASE_DIR, "data", "interventions.csv"))
 shift_hours = float(pd.to_numeric(orders_data["shift_hours"], errors="coerce").median())
 
 
@@ -53,8 +55,11 @@ def _load_bundle(path):
         return None
 
 
-capacity_model = _load_bundle("models/line_shift_capacity_model.pkl")
-line_model = _load_bundle("models/line_feasibility_model.pkl")
+capacity_model = _load_bundle(os.path.join(BASE_DIR, "models", "line_shift_capacity_model.pkl"))
+line_model = _load_bundle(os.path.join(BASE_DIR, "models", "line_feasibility_model.pkl"))
+if line_model and line_model.get("target") != FEASIBILITY_MODEL_TARGET:
+    # Do not present the previous on-time model as an Accept/Reject classifier.
+    line_model = None
 if line_model:
     training_orders = orders_data[
         pd.to_numeric(orders_data["n_shifts"], errors="coerce").le(FACTORY_SHIFTS_PER_DAY)
@@ -75,17 +80,18 @@ if line_model:
         }
         for feature, limits in fallback_ranges.items():
             line_model.setdefault("training_ranges", {}).setdefault(feature, limits)
-n2_bundle = _load_bundle("models/best_n2_model.pkl")
+n2_bundle = _load_bundle(os.path.join(BASE_DIR, "models", "best_n2_model.pkl"))
 cost_model = None
-if os.path.exists("models/best_cost_model.pkl"):
+cost_model_path = os.path.join(BASE_DIR, "models", "best_cost_model.pkl")
+if os.path.exists(cost_model_path):
     try:
-        cost_model = joblib.load("models/best_cost_model.pkl")
+        cost_model = joblib.load(cost_model_path)
     except Exception as exc:
-        print(f"Could not load models/best_cost_model.pkl: {exc}")
+        print(f"Could not load {cost_model_path}: {exc}")
 
 training_report = {}
 try:
-    with open("models/model_comparison.json", encoding="utf-8") as report_file:
+    with open(os.path.join(BASE_DIR, "models", "model_comparison.json"), encoding="utf-8") as report_file:
         training_report = json.load(report_file)
 except (OSError, json.JSONDecodeError):
     pass
@@ -101,7 +107,7 @@ def home():
                            style="Polo", priority="Normal")
 
 #  Prediction endpoint: evaluate the order and present the recommended action.
-@app.route("/predict", methods=["POST"])
+@app.route("/api/predict", methods=["POST"])
 def predict():
     wants_json = request.is_json or request.headers.get("Accept") == "application/json"
     form = request.get_json(silent=True) if request.is_json else request.form
@@ -173,28 +179,19 @@ def predict():
         production_plan["machine_note"],
     ]
 
-    result = {
-        "order_quantity": qty,
-        "handover_days": days,
-        "estimated_smv": smv,
-        "estimated_order_value": order_value,
-        "estimated_workload": qty * smv,
-        "capacity_ratio": capacity_ratio,
-        "style": style,
-        "priority": priority,
-        "production_plan": production_plan,
-        "n1_analysis": n1_analysis,
-        "n2_analysis": n2_analysis,
-        "decision": decision,
-        "explanation": explanation,
-        "workforce": {
-            "available": False,
-            "message": "The current backend has no live worker allocation endpoint. The displayed staffing plan is a required grade mix, not named worker recommendations.",
-        },
-    }
-    if wants_json:
-        return jsonify(result)
-    return render_template("result.html", **result)
+    return render_template("result.html",
+                           order_quantity=qty,
+                           handover_days=days,
+                           estimated_smv=smv,
+                           estimated_order_value=order_value,
+                           estimated_workload=qty * smv,
+                           capacity_ratio=capacity_ratio,
+                           style=style,
+                           priority=priority,
+                           production_plan=production_plan,
+                           n1_analysis=n1_analysis,
+                           n2_analysis=n2_analysis,
+                           decision=decision, explanation=explanation)
 
 #  Start the Flask app for local prediction testing.
 if __name__ == "__main__":
