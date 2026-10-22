@@ -6,14 +6,16 @@ for (const viewport of ['desktop', 'mobile'] as const) {
   test(`real Top 10 ranking and selected evidence (${viewport})`, async ({ page }, testInfo) => {
     test.setTimeout(60_000);
     if (viewport === 'mobile') await page.setViewportSize({ width: 390, height: 844 });
-    let rankingRequests = 0;
+    let rankingResponses = 0;
     const errors: string[] = [];
     page.on('pageerror', error => errors.push(error.message));
-    page.on('request', request => { if (request.url().endsWith('/top-risk-machines')) rankingRequests++; });
-    await page.goto('/component3/predict-risk');
-    await page.getByLabel('Prediction snapshot').selectOption(time);
+    // Development StrictMode can start and abort the initial effect request.
+    // Count completed batches, and ensure machine selection never reloads one.
+    page.on('response', response => {
+      if (response.url().endsWith('/top-risk-machines') && response.ok()) rankingResponses++;
+    });
     const pending = page.waitForResponse(response => response.url().endsWith('/top-risk-machines'));
-    await page.getByRole('button', { name: 'Compare all 100 machines' }).click();
+    await page.goto('/component3/predict-risk');
     const response = await pending;
     expect(response.status()).toBe(200);
     expect(response.request().postDataJSON()).toEqual({ prediction_time: time });
@@ -30,7 +32,7 @@ for (const viewport of ['desktop', 'mobile'] as const) {
       await expect(row.getByRole('cell').nth(0)).toHaveText(String(machine.rank));
       await expect(row.getByRole('cell').nth(1)).toHaveText(String(machine.machine_id).padStart(3, '0'));
       const percentage = (machine.predicted_failure_probability * 100).toLocaleString('en-GB', {
-        minimumFractionDigits: 2, maximumFractionDigits: 4,
+        minimumFractionDigits: 2, maximumFractionDigits: 2,
       });
       await expect(row.getByRole('cell').nth(2)).toHaveText(`${percentage}%`);
       // Check the rendered track ratio against the actual API probability,
@@ -66,15 +68,21 @@ for (const viewport of ['desktop', 'mobile'] as const) {
       })) await expect(page.getByTestId(`evidence-${key}`)).toHaveText(value);
       await expect(table.getByRole('row')).toHaveCount(11);
     }
-    expect(rankingRequests).toBe(1);
+    expect(rankingResponses).toBe(1);
     await expect(page.getByRole('alert')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath('top-risk-real-prediction.png'), fullPage: true });
     console.log(JSON.stringify({ viewport, prediction_time: ranking.prediction_time, machines: ranking.machines,
       selected_details_verified: selected.map(machine => machine.machine_id), model_version: ranking.model_version }));
+    const selectedMachine = await page.getByLabel('Historical machine').inputValue();
+    const nextRanking = page.waitForResponse(response => response.url().endsWith('/top-risk-machines')
+      && response.request().postDataJSON()?.prediction_time === '2015-09-09T06:00:00');
     await page.getByLabel('Prediction snapshot').selectOption('2015-09-09T06:00:00');
-    await expect(table).toHaveCount(0);
+    expect((await nextRanking).status()).toBe(200);
+    await expect(page.getByRole('table', { name: /9 Sep 2015/ }).getByRole('row')).toHaveCount(11);
     await expect(page.getByTestId('failure-probability')).toHaveCount(0);
+    await expect(page.getByLabel('Historical machine')).toHaveValue(selectedMachine);
+    expect(rankingResponses).toBe(2);
     expect(errors).toEqual([]);
   });
 }

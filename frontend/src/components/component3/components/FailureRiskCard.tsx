@@ -10,6 +10,5 @@ export default function FailureRiskCard({ result }: { result: FailureRiskRespons
       <p className="probability" data-testid="failure-probability">{percentage}<span>%</span></p></div>
       <p className="risk-explanation">Estimated chance of a recorded failure within the next seven days
         after this historical snapshot.</p></div>
-    <p className="probability-caveat">A probability is not a reliability score.</p>
   </section>;
 }

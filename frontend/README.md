@@ -75,7 +75,7 @@ be agreed separately. Setting an absolute API URL alone does not enable CORS.
   at 06:00. These are public input metadata; no source CSVs are bundled.
 - Timestamp strings are sent unchanged without `Date`, `toISOString`, `Z` or a
   timezone offset, preserving the backend's timezone-naive contract.
-- Prediction happens only on form submission. The backend remains authoritative
+- Individual prediction happens only through **Predict selected machine** or **View**. The backend remains authoritative
   for available IDs and timestamps. Its six-decimal probability is displayed as
   a percentage to two decimals, with the returned number also shown.
 - H is elapsed time since the earliest observed maintenance, not verified logging
@@ -200,13 +200,15 @@ are ignored generated/local files, not part of the source inventory above.
 
 ## Top 10 Highest-Risk Machines
 
-The prediction page now also offers **Compare all 100 machines** for the date selected
-in Prediction snapshot. This sends one timestamp-only request to
+The prediction page automatically loads **Highest Failure-Risk Machines (Next 7 Days)**
+on entry and whenever Prediction snapshot changes. **Refresh ranking** retries or
+reloads the selected date. Each comparison sends one timestamp-only request to
 `POST /api/v1/component3/top-risk-machines`; it does not issue 100 individual
 requests. All results come from the saved calibrated model on the backend.
 
 The table retains the backend's ordering and displays the returned probabilities
-as percentages. Backend ordering uses unrounded probabilities, so equal display
+as percentages to two decimal places. Bars and selection retain the returned values.
+Backend ordering uses unrounded probabilities, so equal display
 values need not be sorted by machine ID. No severity thresholds are added. The
 ranking is explicitly relative to the 100 machines in the synthetic Azure
 benchmark at this historical date, not a reliability assessment or maintenance
@@ -214,8 +216,9 @@ recommendation.
 
 Each **View** button selects the machine and requests its full prediction and
 H/M/F/C/R profile through the existing endpoint. All ten ranking rows remain while
-switching machines on the same date. Date changes clear both outputs and abort
-outdated requests. Late ranking replies are ignored even if cancellation is not
+switching machines on the same date. Date changes clear stale outputs, automatically
+reload the ranking, preserve the machine selector and abort outdated requests.
+Late ranking replies are ignored even if cancellation is not
 honored. Detail responses must match the ranked probability and model identity;
 otherwise the page asks for a refreshed ranking instead of associating mismatched
 evidence. Null H/R handling and the original individual workflow remain intact.
@@ -237,10 +240,10 @@ stopping another developer's servers.
 
 The page title is **Machine Failure-Risk Explorer**. Its full-width controls share
 one historical date between direct prediction and comparison, with a fixed 7-day
-horizon. Direct prediction works without requesting a ranking. Comparison never
+horizon. Direct prediction works even while ranking is loading or unavailable. Comparison never
 automatically changes the machine selector or requests an individual prediction.
 
-On desktop, Top 10 Machines and Selected Machine Prediction occupy approximately
+On desktop, Highest Failure-Risk Machines and Selected Machine Prediction occupy approximately
 40% and 60% of the result area. At tablet/mobile widths they stack, with compact
 empty states and no stretched blank prediction card. View selects a ranked machine,
 requests its existing detailed prediction, and highlights the selector's machine
@@ -250,7 +253,8 @@ Changing dates retains the existing reset/cancellation/stale-response behavior.
 
 The five evidence indicators are metric cards, including unchanged H/C/R caveats
 and null handling. The synthetic historical disclaimer is always rendered and
-sticks during dashboard scrolling. Research details is a native keyboard-operable
+sticks during dashboard scrolling as **Synthetic Demo · Azure 2015 Data**, with the
+visible caution that these are not validated maintenance alerts. **Model & Data Info** is a native keyboard-operable
 disclosure, initially collapsed, containing separate prediction/ranking notes and
 provenance. Model hashes and request IDs are not shown outside that disclosure.
 Shared sidebar branding remains in MainLayout; feature presentation is scoped in
@@ -259,7 +263,7 @@ component3.css. Existing API clients, request hooks and contracts are unchanged.
 The dashboard browser suite checks empty, ranking-only and selected-prediction
 states at 1440px, 1024px and 390px widths. It also checks that comparison sends no
 individual prediction request, selected rows are highlighted, the disclaimer stays
-visible after scrolling, Research details supports keyboard expansion, and the
+visible after scrolling, Model & Data Info supports keyboard expansion, and the
 page has no horizontal overflow. Existing real prediction/ranking tests remain.
 Run `npm run test:e2e` with both servers running. Its generated screenshots are:
 

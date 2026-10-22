@@ -1,25 +1,31 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../../../app/App';
-import { deferred, jsonResponse, riskFixture } from '../../../test/fixtures';
+import { deferred, jsonResponse, rankingFixture, riskFixture } from '../../../test/fixtures';
 import { PREDICTION_TIMESTAMPS } from '../data/demoOptions';
 
 function renderPage(path = '/component3/predict-risk') {
   return render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);
 }
-function mockResponse() {
-  const fetch = vi.fn().mockResolvedValue(jsonResponse(riskFixture()));
-  vi.stubGlobal('fetch', fetch);
+function mockResponse(fetch = vi.fn().mockResolvedValue(jsonResponse(riskFixture()))) {
+  vi.stubGlobal('fetch', (url: string, options: RequestInit) => {
+    if (url.endsWith('top-risk-machines')) {
+      return Promise.resolve(jsonResponse(rankingFixture(JSON.parse(options.body as string))));
+    }
+    return fetch(url, options);
+  });
   return fetch;
 }
 
 describe('Component 3 historical prediction page', () => {
+  beforeEach(() => { mockResponse(); });
   it('renders at the component route without displaying a preset probability', () => {
     const fetch = mockResponse(); renderPage();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Machine Failure-Risk Explorer');
-    expect(screen.getByLabelText('Synthetic data limitations')).toHaveTextContent('not real apparel-factory records');
+    expect(screen.getByLabelText('Synthetic data limitations')).toHaveTextContent('Synthetic Demo · Azure 2015 Data');
+    expect(screen.getByLabelText('Synthetic data limitations')).toHaveTextContent('not validated maintenance alerts');
     expect(screen.queryByTestId('failure-probability')).not.toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
@@ -35,7 +41,7 @@ describe('Component 3 historical prediction page', () => {
 
   it('submits the selected integer ID and exact timezone-naive timestamp', async () => {
     const fetch = vi.fn().mockResolvedValue(jsonResponse(riskFixture({ machine_id: 100, prediction_time: PREDICTION_TIMESTAMPS[12] })));
-    vi.stubGlobal('fetch', fetch); renderPage();
+    mockResponse(fetch); renderPage();
     const user = userEvent.setup();
     await user.selectOptions(screen.getByLabelText('Historical machine'), '100');
     await user.selectOptions(screen.getByLabelText('Prediction snapshot'), PREDICTION_TIMESTAMPS[12]);
@@ -56,10 +62,10 @@ describe('Component 3 historical prediction page', () => {
     expect(screen.getByTestId('evidence-C')).toHaveTextContent('100%');
     expect(screen.getByTestId('evidence-R')).toHaveTextContent('1.5 days');
     expect(screen.getByText(/A probability is not a reliability score/)).toBeInTheDocument();
-    expect(screen.getByText(/This does not establish logging coverage/)).toBeInTheDocument();
-    expect(screen.getByText(/not database freshness/)).toBeInTheDocument();
+    expect(screen.getByText('Not guaranteed log coverage.')).toBeVisible();
+    expect(screen.getByText('Event recency, not database freshness.')).toBeVisible();
     expect(screen.getByText(/test fixture only/)).toBeInTheDocument();
-    await userEvent.click(screen.getByText('Research details'));
+    await userEvent.click(screen.getByText('Model & Data Info'));
     expect(screen.getByText('test-request')).toBeVisible();
   });
 
@@ -67,7 +73,7 @@ describe('Component 3 historical prediction page', () => {
     const result = riskFixture();
     result.evidence_profile.H_observed_maintenance_span_days = null;
     result.evidence_profile.R_days_since_latest_maintenance = null;
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse(result))); renderPage();
+    mockResponse(vi.fn().mockResolvedValue(jsonResponse(result))); renderPage();
     await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(await screen.findByTestId('evidence-H')).toHaveTextContent('No prior maintenance observed');
     expect(screen.getByTestId('evidence-R')).toHaveTextContent('No prior maintenance observed');
@@ -75,7 +81,7 @@ describe('Component 3 historical prediction page', () => {
 
   it('shows loading status and prevents duplicate submissions', async () => {
     const pending = deferred<Response>();
-    const fetch = vi.fn().mockReturnValue(pending.promise); vi.stubGlobal('fetch', fetch); renderPage();
+    const fetch = mockResponse(vi.fn().mockReturnValue(pending.promise)); renderPage();
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(screen.getByRole('status')).toHaveTextContent('Reading the historical snapshot');
@@ -87,7 +93,7 @@ describe('Component 3 historical prediction page', () => {
   });
 
   it.each([404, 422, 500, 503])('shows HTTP %i errors and allows a retry without a fallback result', async status => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ detail: 'API test error' }, status))); renderPage();
+    mockResponse(vi.fn().mockResolvedValue(jsonResponse({ detail: 'API test error' }, status))); renderPage();
     await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Prediction unavailable');
     expect(screen.queryByTestId('failure-probability')).not.toBeInTheDocument();
@@ -95,7 +101,7 @@ describe('Component 3 historical prediction page', () => {
   });
 
   it('shows a network error', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch'))); renderPage();
+    mockResponse(vi.fn().mockRejectedValue(new TypeError('Failed to fetch'))); renderPage();
     await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Cannot reach the prediction API');
   });
@@ -112,7 +118,7 @@ describe('Component 3 historical prediction page', () => {
     const pending = deferred<Response>();
     const fetch = vi.fn().mockReturnValueOnce(pending.promise)
       .mockResolvedValueOnce(jsonResponse(riskFixture({ machine_id: 2, predicted_failure_probability: 0.13 })));
-    vi.stubGlobal('fetch', fetch); renderPage();
+    mockResponse(fetch); renderPage();
     const user = userEvent.setup();
     await user.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     const firstSignal = (fetch.mock.calls[0][1] as RequestInit).signal;
@@ -127,7 +133,7 @@ describe('Component 3 historical prediction page', () => {
 
   it('aborts pending work on unmount', async () => {
     const pending = deferred<Response>(); const fetch = vi.fn().mockReturnValue(pending.promise);
-    vi.stubGlobal('fetch', fetch); const rendered = renderPage();
+    mockResponse(fetch); const rendered = renderPage();
     await userEvent.click(screen.getByRole('button', { name: /Predict selected machine/ }));
     const signal = (fetch.mock.calls[0][1] as RequestInit).signal;
     rendered.unmount(); expect(signal?.aborted).toBe(true);

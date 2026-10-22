@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import ErrorMessage from '../../../shared/components/ErrorMessage';
 import EvidenceSufficiencyPanel from '../components/EvidenceSufficiencyPanel';
@@ -19,7 +19,13 @@ export default function FailureRiskPredictionPage() {
   const [inputError, setInputError] = useState<string | null>(null);
   const prediction = useFailureRisk();
   const ranking = useTopRiskMachines();
+  const { rank, reset: resetRanking } = ranking;
   const predictionHeading = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    void rank(timestamp);
+    return resetRanking;
+  }, [timestamp, rank, resetRanking]);
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -48,12 +54,15 @@ export default function FailureRiskPredictionPage() {
     <div className="page-heading"><div><span className="eyebrow">COMPONENT 03 / PREDICTIVE MAINTENANCE</span>
       <h1>Machine Failure-Risk Explorer</h1><p>Compare historical machine risk, then explore the evidence behind a prediction.</p></div>
       <div className="period-stamp"><strong>2015</strong><span>HISTORICAL BENCHMARK</span></div></div>
-    <SyntheticDataNotice />
+    <SyntheticDataNotice compact />
     <PredictionControls machineId={machineId} timestamp={timestamp}
       predicting={prediction.loading} comparing={ranking.loading} onPredict={submit}
       onCompare={() => { void ranking.rank(timestamp); }}
       onMachineChange={value => { selectionChanged(); setMachineId(value); }}
-      onDateChange={value => { selectionChanged(); ranking.reset(); setTimestamp(value); }} />
+      onDateChange={value => {
+        if (value === timestamp) return;
+        selectionChanged(); ranking.reset(); setTimestamp(value);
+      }} />
     <div className="explorer-grid">
       <TopRiskMachinesPanel predictionTime={timestamp} selectedMachineId={machineId}
         loading={ranking.loading} error={ranking.error} result={ranking.result}

@@ -1,4 +1,10 @@
-export default function SyntheticDataNotice() {
+export default function SyntheticDataNotice({ compact = false }: { compact?: boolean }) {
+  if (compact) return <aside className="synthetic-notice" aria-label="Synthetic data limitations">
+    <span className="notice-icon" aria-hidden="true">i</span><div>
+      <strong>Synthetic Demo · Azure 2015 Data</strong>
+      <p>Historical benchmark predictions, not validated maintenance alerts.</p>
+    </div><span className="notice-tag">RESEARCH ONLY</span>
+  </aside>;
   return <aside className="synthetic-notice" aria-label="Synthetic data limitations">
     <span className="notice-icon" aria-hidden="true">i</span><div>
       <strong>Synthetic Azure historical demonstration</strong>

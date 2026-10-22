@@ -54,9 +54,15 @@ for (const [size, viewport] of Object.entries(sizes)) {
     page.on('request', request => {
       if (request.method() === 'POST' && request.url().endsWith('/predict-risk')) predictionRequests++;
     });
+    // Hold, then continue the actual batch request to inspect the loading state
+    // and a deliberate user selection. All response data still comes from FastAPI.
+    let releaseRanking!: () => void;
+    const rankingGate = new Promise<void>(resolve => { releaseRanking = resolve; });
+    await page.route('**/top-risk-machines', async route => { await rankingGate; await route.continue(); });
+    const rankedResponse = page.waitForResponse(response => response.url().endsWith('/top-risk-machines'));
     await page.goto('/component3/predict-risk');
     const controls = page.getByRole('region', { name: 'Choose a historical snapshot' });
-    const rankingPanel = page.getByRole('region', { name: 'Top 10 Machines' });
+    const rankingPanel = page.getByRole('region', { name: 'Highest Failure-Risk Machines (Next 7 Days)' });
     const predictionPanel = page.getByRole('region', { name: 'Selected Machine Prediction' });
     const notice = page.getByLabel('Synthetic data limitations');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Machine Failure-Risk Explorer');
@@ -64,6 +70,9 @@ for (const [size, viewport] of Object.entries(sizes)) {
     await expect(page.getByTestId('failure-probability')).toHaveCount(0);
     await expect(page.getByRole('table')).toHaveCount(0);
     await expect(notice).toBeVisible();
+    await expect(notice).toContainText('Synthetic Demo · Azure 2015 Data');
+    await expect(notice).toContainText('not validated maintenance alerts');
+    await expect(controls.getByRole('button', { name: 'Comparing 100 machines…' })).toBeDisabled();
     const inputBox = (await controls.boundingBox())!;
     const left = (await rankingPanel.boundingBox())!;
     const right = (await predictionPanel.boundingBox())!;
@@ -82,8 +91,7 @@ for (const [size, viewport] of Object.entries(sizes)) {
 
     // The user explicitly chooses a machine that is not assumed to be ranked.
     await page.getByLabel('Historical machine').selectOption('99');
-    const rankedResponse = page.waitForResponse(response => response.url().endsWith('/top-risk-machines'));
-    await page.getByRole('button', { name: 'Compare all 100 machines' }).click();
+    releaseRanking();
     const response = await rankedResponse; expect(response.status()).toBe(200);
     const ranking: TopRiskMachinesResponse = await response.json();
     await expect(page.getByRole('table').getByRole('row')).toHaveCount(11);
@@ -115,6 +123,7 @@ for (const [size, viewport] of Object.entries(sizes)) {
       expect(selectedHeading.y).toBeGreaterThan(sticky.y + sticky.height);
     }
     const research = page.locator('details.research-details');
+    await expect(research.locator('summary')).toContainText('Model & Data Info');
     await expect(research).not.toHaveAttribute('open');
     await expect(research.getByText(detail.request_id, { exact: true })).not.toBeVisible();
     await checkTextContrast(page);
@@ -129,7 +138,7 @@ for (const [size, viewport] of Object.entries(sizes)) {
     // focus outline. The existing mobile heading-focus assertion stays intact.
     for (const control of [controls.getByLabel('Prediction snapshot'), controls.getByLabel('Historical machine'),
       controls.getByRole('button', { name: 'Predict selected machine' }),
-      controls.getByRole('button', { name: 'Compare all 100 machines' }), view, research.locator('summary')]) {
+      controls.getByRole('button', { name: 'Refresh ranking' }), view, research.locator('summary')]) {
       await control.focus();
       await expect(control).toBeFocused();
       expect(await control.evaluate(element => {

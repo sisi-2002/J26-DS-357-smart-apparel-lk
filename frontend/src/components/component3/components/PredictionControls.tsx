@@ -24,9 +24,9 @@ export default function PredictionControls(props: Props) {
         {props.predicting ? <><span className="spinner" aria-hidden="true" /> Predicting…</> : 'Predict selected machine'}
       </button></div>
       <div className="control-action"><button className="compare-button" type="button" onClick={props.onCompare} disabled={props.comparing}>
-        {props.comparing ? <><span className="spinner" aria-hidden="true" /> Comparing 100 machines…</> : 'Compare all 100 machines'}
+        {props.comparing ? <><span className="spinner" aria-hidden="true" /> Comparing 100 machines…</> : 'Refresh ranking'}
       </button></div>
     </form>
-    <p className="controls-help">One date for both views. Predict a machine directly, or compare the benchmark and choose <strong>View</strong>.</p>
+    <p className="controls-help">Comparison updates automatically with the date. Choose <strong>View</strong>, or predict any machine directly.</p>
   </section>;
 }

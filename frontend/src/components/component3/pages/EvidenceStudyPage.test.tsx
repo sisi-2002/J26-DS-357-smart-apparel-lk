@@ -53,12 +53,14 @@ describe('N2 bundled research study', () => {
   it('opens from navigation with no backend calls and separates the uncalibrated experiments', async () => {
     const fetch = vi.fn(); vi.stubGlobal('fetch', fetch);
     render(<MemoryRouter initialEntries={['/component3/predict-risk']}><App /></MemoryRouter>);
+    // Function 1 starts its batch comparison on entry; N2 must add no API calls.
+    const callsBeforeNavigation = fetch.mock.calls.length;
     await userEvent.click(screen.getByRole('link', { name: 'Evidence study' }));
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Maintenance Evidence Sufficiency Study');
     expect(screen.getByText(/Original uncalibrated 7-day N2 pilot models/)).toBeVisible();
     expect(screen.getByText(/Function 1 uses a separate calibrated model/)).toBeVisible();
     expect(screen.getByLabelText('Synthetic data limitations')).toBeVisible();
-    expect(fetch).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledTimes(callsBeforeNavigation);
     await userEvent.click(screen.getByRole('link', { name: /Machine risk/ }));
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Machine Failure-Risk Explorer');
   });
