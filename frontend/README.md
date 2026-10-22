@@ -44,6 +44,22 @@ global npm: `npm exec --yes --package=npm@11.6.2 -- npm install`.
 
 Open http://127.0.0.1:5173/component3/predict-risk.
 
+## Official shared visual theme
+
+`src/app/styles.css` defines the Smart Apparel-LK Modern Textile Industrial theme
+in Light Mode: Deep Navy `#142D4E`, Textile Teal `#087F8C`, Soft White `#F5F7F8`,
+Sage Mist `#D9E9E8`, and Warm Amber `#E4A75A`. Shared semantic tokens control the
+shell, cards, controls, selections and notices on both Component 3 pages; feature
+styles consume them without defining competing brand palettes.
+
+White text on primary teal, navy text on selected sage rows, and darker teal link
+text preserve AA contrast. Muted blue research/chart accents and the existing coral
+ordinal markers remain distinct from alert or severity classifications. Typography,
+responsive grids, chart scales, routes and prediction/research behavior are unchanged.
+Browser checks verify rendered palette usage, text contrast, focus and both pages
+at desktop, tablet and mobile widths. No Component 1 source was present for a more
+specific visual comparison; alignment follows the supplied official palette.
+
 ## API configuration and CORS
 
 `.env.local` is ignored. Only `.env.example` should be tracked:

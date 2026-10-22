@@ -1,49 +1,12 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { checkIndustrialTheme, checkNavigationFocus, checkTextContrast } from './helpers/theme';
 import type { FailureRiskResponse, TopRiskMachinesResponse } from '../src/components/component3/types/component3.types';
 
 const captures = path.resolve('test-results/dashboard');
 const sizes = { desktop: { width: 1440, height: 1100 }, tablet: { width: 1024, height: 1024 }, mobile: { width: 390, height: 844 } };
 
-async function checkTextContrast(page: Page) {
-  const failures = await page.locator('.machine-risk-explorer').evaluate(root => {
-    const rgb = (value: string) => {
-      const parts = value.match(/[\d.]+/g)!.map(Number);
-      return [...parts.slice(0, 3), parts[3] ?? 1];
-    };
-    const luminance = (color: number[]) => color.slice(0, 3).map(value => {
-      const s = value / 255;
-      return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
-    }).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
-    const failures: { text: string; ratio: number }[] = [];
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      const element = node.parentElement!;
-      if (!node.textContent?.trim() || element.closest('[aria-hidden="true"]')) continue;
-      const range = document.createRange(); range.selectNodeContents(node);
-      if (![...range.getClientRects()].some(rect => rect.width > 0 && rect.height > 0)) continue;
-      const style = getComputedStyle(element);
-      if (style.visibility !== 'visible') continue;
-      const ancestors: Element[] = [];
-      for (let ancestor: Element | null = element; ancestor; ancestor = ancestor.parentElement) ancestors.unshift(ancestor);
-      let background = [255, 255, 255];
-      for (const ancestor of ancestors) {
-        const color = rgb(getComputedStyle(ancestor).backgroundColor);
-        background = background.map((value, index) => color[index] * color[3] + value * (1 - color[3]));
-      }
-      const color = rgb(style.color);
-      const foreground = background.map((value, index) => color[index] * color[3] + value * (1 - color[3]));
-      const a = luminance(foreground); const b = luminance(background);
-      const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
-      // Use the normal-text requirement even for large headings/numbers.
-      if (ratio < 4.5) failures.push({ text: node.textContent.trim().slice(0, 100), ratio });
-    }
-    return failures;
-  });
-  expect(failures, 'visible Component 3 text meets WCAG AA contrast').toEqual([]);
-}
 
 for (const [size, viewport] of Object.entries(sizes)) {
   test(`dashboard empty, ranking-only and selected states (${size})`, async ({ page }) => {
@@ -70,6 +33,7 @@ for (const [size, viewport] of Object.entries(sizes)) {
     await expect(page.getByTestId('failure-probability')).toHaveCount(0);
     await expect(page.getByRole('table')).toHaveCount(0);
     await expect(notice).toBeVisible();
+    await checkIndustrialTheme(page);
     await expect(notice).toContainText('Synthetic Demo · Azure 2015 Data');
     await expect(notice).toContainText('not validated maintenance alerts');
     await expect(controls.getByRole('button', { name: 'Comparing 100 machines…' })).toBeDisabled();
@@ -112,6 +76,7 @@ for (const [size, viewport] of Object.entries(sizes)) {
     await expect(page.getByTestId('failure-probability')).toHaveText(`${(detail.predicted_failure_probability * 100).toFixed(2)}%`);
     await expect(view).toHaveAttribute('aria-current', 'true');
     await expect(view.locator('xpath=ancestor::tr')).toHaveAttribute('data-selected', 'true');
+    await expect(view.locator('xpath=ancestor::tr').getByRole('cell').first()).toHaveCSS('background-color', 'rgb(217, 233, 232)');
     await expect(view.locator('xpath=ancestor::tr').getByText('Selected', { exact: true })).toBeVisible();
     await expect(page.getByRole('table').getByRole('row')).toHaveCount(11);
     await expect(notice).toBeVisible();
@@ -146,5 +111,25 @@ for (const [size, viewport] of Object.entries(sizes)) {
         return element.matches(':focus-visible') && style.outlineStyle === 'solid' && parseFloat(style.outlineWidth) >= 3;
       })).toBe(true);
     }
+    await checkNavigationFocus(page);
+  });
+
+  test(`themed network errors preserve the demo caution and usable controls (${size})`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    // Exercise unavailable transport, never manufacture a model response.
+    await page.route('**/api/v1/component3/**', route => route.abort());
+    await page.goto('/component3/predict-risk');
+    await expect(page.getByRole('alert')).toContainText('Ranking unavailable');
+    await page.getByRole('button', { name: 'Predict selected machine' }).click();
+    await expect(page.getByRole('alert')).toHaveCount(2);
+    await expect(page.getByTestId('failure-probability')).toHaveCount(0);
+    await expect(page.getByRole('table')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Predict selected machine' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Refresh ranking' })).toBeEnabled();
+    await expect(page.getByLabel('Synthetic data limitations')).toBeVisible();
+    await checkIndustrialTheme(page);
+    await checkTextContrast(page);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: path.join(captures, `${size}-network-unavailable.png`), fullPage: true });
   });
 }

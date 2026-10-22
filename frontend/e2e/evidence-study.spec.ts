@@ -1,6 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { expect, test } from '@playwright/test';
+import { checkIndustrialTheme, checkNavigationFocus, checkTextContrast } from './helpers/theme';
 import snapshot from '../src/components/component3/data/n2Study.snapshot.json' with { type: 'json' };
 
 for (const [mode, viewport] of Object.entries({ desktop: { width: 1440, height: 1100 },
@@ -20,6 +21,8 @@ for (const [mode, viewport] of Object.entries({ desktop: { width: 1440, height: 
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Maintenance Evidence Sufficiency Study');
     await expect(page.getByRole('link', { name: 'Evidence study' })).toHaveAttribute('aria-current', 'page');
     await expect(page.getByText(/Original uncalibrated 7-day N2 pilot models/)).toBeVisible();
+    await checkIndustrialTheme(page);
+    await checkTextContrast(page);
     await expect(page.getByText(/Negative finding: risk-only slightly outperformed/)).toBeVisible();
     const findings = page.getByRole('region', { name: 'Key Research Findings — Preliminary' });
     await expect(findings.getByRole('article')).toHaveCount(3);
@@ -91,6 +94,8 @@ for (const [mode, viewport] of Object.entries({ desktop: { width: 1440, height: 
       expect(await control.evaluate(element => getComputedStyle(element).outlineStyle)).toBe('solid');
       expect(await control.evaluate(element => getComputedStyle(element).outlineWidth)).toBe('3px');
     }
+    await checkTextContrast(page);
+    await checkNavigationFocus(page);
     expect(apiRequests).toEqual([]); expect(errors).toEqual([]);
     console.log(JSON.stringify({ study: mode, source: 'bundled aggregate JSON', apiRequests: apiRequests.length,
       brier: snapshot.conditions.map(condition => condition.brier), selected: '90-day F: four groups' }));
