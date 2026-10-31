@@ -1,0 +1,3 @@
+-r ../requirements.txt
+matplotlib>=3.6,<4
+# Optional XGBoost is detected at runtime; do not install it automatically.

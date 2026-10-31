@@ -27,14 +27,20 @@ for (const viewport of ['desktop', 'mobile'] as const) {
     expect(new Set(ranking.machines.map(machine => machine.machine_id)).size).toBe(10);
     const table = page.getByRole('table');
     await expect(table.getByRole('row')).toHaveCount(11);
+    const selectorLabels = await page.getByLabel('Historical machine').locator('option').allTextContents();
+    expect(selectorLabels).toHaveLength(100);
+    expect(selectorLabels[63]).toBe('Machine 064 · Line 07');
+    expect(selectorLabels[70]).toBe('Machine 071 · Line 08');
+    expect(selectorLabels[21]).toBe('Machine 022 · Line 03');
     for (const [index, machine] of ranking.machines.entries()) {
       const row = table.getByRole('row').nth(index + 1);
       await expect(row.getByRole('cell').nth(0)).toHaveText(String(machine.rank));
-      await expect(row.getByRole('cell').nth(1)).toHaveText(String(machine.machine_id).padStart(3, '0'));
+      await expect(row.getByRole('cell').nth(1)).toHaveText(`Machine ${String(machine.machine_id).padStart(3, '0')}`);
+      await expect(row.getByRole('cell').nth(2)).toHaveText(`Line ${String(Math.floor((machine.machine_id - 1) / 10) + 1).padStart(2, '0')}`);
       const percentage = (machine.predicted_failure_probability * 100).toLocaleString('en-GB', {
         minimumFractionDigits: 2, maximumFractionDigits: 2,
       });
-      await expect(row.getByRole('cell').nth(2)).toHaveText(`${percentage}%`);
+      await expect(row.getByRole('cell').nth(3)).toHaveText(`${percentage}%`);
       // Check the rendered track ratio against the actual API probability,
       // including the top row: the longest bar must not be normalized to 100%.
       const track = (await row.locator('.probability-track').boundingBox())!;
@@ -51,6 +57,7 @@ for (const viewport of ['desktop', 'mobile'] as const) {
       await page.getByRole('button', { name: `View prediction for machine ${machine.machine_id}`, exact: true }).click();
       const detailResponse = await detailPending;
       expect(detailResponse.status()).toBe(200);
+      expect(detailResponse.request().postDataJSON()).toEqual({ machine_id: machine.machine_id, prediction_time: time });
       const detail: FailureRiskResponse = await detailResponse.json();
       expect(detail.machine_id).toBe(machine.machine_id);
       expect(detail.prediction_time).toBe(time);
@@ -58,6 +65,8 @@ for (const viewport of ['desktop', 'mobile'] as const) {
       expect(detail.model_version).toBe(ranking.model_version);
       await expect(page.getByTestId('failure-probability')).toHaveText(`${(detail.predicted_failure_probability * 100).toFixed(2)}%`);
       await expect(page.getByLabel('Historical machine')).toHaveValue(String(machine.machine_id));
+      await expect(page.getByTestId('selected-machine-name')).toHaveText(`Machine ${String(machine.machine_id).padStart(3, '0')}`);
+      await expect(page.getByTestId('selected-machine-line')).toHaveText(`Line ${String(Math.floor((machine.machine_id - 1) / 10) + 1).padStart(2, '0')}`);
       const evidence = detail.evidence_profile;
       const days = (value: number | null) => value === null ? 'No prior maintenance observed'
         : `${value.toLocaleString('en-GB', { maximumFractionDigits: 2 })} days`;
@@ -82,7 +91,18 @@ for (const viewport of ['desktop', 'mobile'] as const) {
     await expect(page.getByRole('table', { name: /9 Sep 2015/ }).getByRole('row')).toHaveCount(11);
     await expect(page.getByTestId('failure-probability')).toHaveCount(0);
     await expect(page.getByLabel('Historical machine')).toHaveValue(selectedMachine);
+    expect(await page.getByLabel('Historical machine').locator('option').allTextContents()).toEqual(selectorLabels);
     expect(rankingResponses).toBe(2);
+    const reloadResponse = page.waitForResponse(response => response.url().endsWith('/top-risk-machines'));
+    await page.reload();
+    const reloaded: TopRiskMachinesResponse = await (await reloadResponse).json();
+    expect(reloaded.machines).toEqual(ranking.machines);
+    expect(reloaded.model_version).toBe(ranking.model_version);
+    expect(await page.getByLabel('Historical machine').locator('option').allTextContents()).toEqual(selectorLabels);
+    await expect(page.getByRole('table').getByRole('row')).toHaveCount(11);
     expect(errors).toEqual([]);
   });
 }
+
+// The LR regression workflow runs against the flag-off server.
+test.skip(process.env.E2E_EXPERIMENTAL_ENABLED === 'true', 'Stable LR workflow; exercised with flags off');

@@ -27,7 +27,7 @@ describe('machine-risk dashboard presentation and workflow', () => {
     expect(within(controls).getByText('7 days')).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Highest Failure-Risk Machines (Next 7 Days)' })).toBeInTheDocument();
     expect(screen.getByRole('region', { name: 'Selected Machine Prediction' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Synthetic data limitations')).toBeVisible();
+    expect(screen.getByLabelText('Prototype information')).toBeVisible();
   });
 
   it('compares without changing the selected machine or requesting a prediction', async () => {
@@ -84,7 +84,7 @@ describe('machine-risk dashboard presentation and workflow', () => {
     expect(screen.getByText('Not guaranteed log coverage.')).toBeVisible();
     expect(screen.getByText('Constant at 100% here; not factory data quality.')).toBeVisible();
     expect(screen.getByText('Event recency, not database freshness.')).toBeVisible();
-    expect(screen.getByLabelText('Synthetic data limitations')).toHaveTextContent('not validated maintenance alerts');
+    expect(screen.getByLabelText('Prototype information')).toHaveTextContent('Production lines are illustrative');
     await user.click(summary);
     expect(screen.getByText('test-request')).toBeVisible();
     for (const hash of screen.getAllByText('sha256:test-only')) expect(hash).toBeVisible();
@@ -120,5 +120,36 @@ describe('machine-risk dashboard presentation and workflow', () => {
     expect(summary).toHaveFocus();
     // Native summary Enter/Space behavior is verified in the real browser suite;
     // jsdom does not implement that browser default action.
+  });
+
+  it('uses the same machine name and line in the selector, ranking and prediction without sending line metadata', async () => {
+    const fetch = vi.fn((url: string, options: RequestInit) => {
+      const body = JSON.parse(options.body as string);
+      if (url.endsWith('top-risk-machines')) return Promise.resolve(jsonResponse(rankingFixture(body)));
+      return Promise.resolve(jsonResponse(riskFixture({ ...body,
+        predicted_failure_probability: body.machine_id === 20 ? 0.8 : 0.25 })));
+    });
+    vi.stubGlobal('fetch', fetch); renderDashboard(); const user = userEvent.setup();
+    const table = await screen.findByRole('table');
+    const view = screen.getByRole('button', { name: 'View prediction for machine 20' });
+    const cells = within(view.closest('tr')!).getAllByRole('cell');
+    expect(cells[1]).toHaveTextContent('Machine 020');
+    expect(cells[2]).toHaveTextContent('Line 02');
+    await user.click(view);
+    expect(await screen.findByTestId('selected-machine-name')).toHaveTextContent('Machine 020');
+    expect(screen.getByTestId('selected-machine-line')).toHaveTextContent('Line 02');
+    expect(within(screen.getByLabelText('Historical machine')).getByRole('option', { selected: true }))
+      .toHaveTextContent('Machine 020 · Line 02');
+    await user.selectOptions(screen.getByLabelText('Historical machine'), '64');
+    await user.click(screen.getByRole('button', { name: 'Predict selected machine' }));
+    expect(await screen.findByTestId('selected-machine-name')).toHaveTextContent('Machine 064');
+    expect(screen.getByTestId('selected-machine-line')).toHaveTextContent('Line 07');
+    expect(screen.getByRole('table')).toBe(table);
+    const predictionBodies = fetch.mock.calls.filter(([url]) => url.endsWith('predict-risk'))
+      .map(([, options]) => JSON.parse(options.body as string));
+    expect(predictionBodies).toEqual([
+      { machine_id: 20, prediction_time: '2015-09-02T06:00:00' },
+      { machine_id: 64, prediction_time: '2015-09-02T06:00:00' },
+    ]);
   });
 });

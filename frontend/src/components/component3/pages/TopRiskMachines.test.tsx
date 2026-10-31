@@ -32,7 +32,7 @@ describe('top-risk machine interaction', () => {
     const fetch = routedFetch(); renderPage(); const user = userEvent.setup();
     const table = await screen.findByRole('table');
     expect(within(table).getAllByRole('row')).toHaveLength(11);
-    expect(within(table).getAllByRole('row')[1]).toHaveTextContent('02080.00%');
+    expect(within(table).getAllByRole('row')[1]).toHaveTextContent('Machine 020Line 0280.00%');
     expect(fetch).toHaveBeenCalledTimes(1);
     await user.click(screen.getByRole('button', { name: 'View prediction for machine 20' }));
     expect(await screen.findByTestId('failure-probability')).toHaveTextContent('80.00%');
@@ -180,7 +180,7 @@ describe('top-risk machine interaction', () => {
     result.machines[1].predicted_failure_probability = result.machines[0].predicted_failure_probability;
     routedFetch(result); renderPage();
     const rows = within(await screen.findByRole('table')).getAllByRole('row');
-    expect(rows[1]).toHaveTextContent('02080.00%');
-    expect(rows[2]).toHaveTextContent('01980.00%');
+    expect(rows[1]).toHaveTextContent('Machine 020Line 0280.00%');
+    expect(rows[2]).toHaveTextContent('Machine 019Line 0280.00%');
   });
 });

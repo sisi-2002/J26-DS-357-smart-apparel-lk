@@ -48,3 +48,6 @@ for (const mode of ['desktop', 'mobile'] as const) {
     expect(consoleErrors).toEqual([]);
   });
 }
+
+// The LR regression workflow runs against the flag-off server.
+test.skip(process.env.E2E_EXPERIMENTAL_ENABLED === 'true', 'Stable LR workflow; exercised with flags off');

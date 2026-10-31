@@ -14,6 +14,9 @@ export default function ResearchDetails({ prediction, ranking }: Props) {
         <h3 id="model-data-heading">Model and dataset limitations</h3>
         <p>This historical demonstration uses the synthetic Microsoft Azure 2015 benchmark with 100 industrial machines,
           not real apparel-factory records. It is not live monitoring or validated maintenance advice.</p>
+        <p>Machine names preserve the benchmark IDs. Production-line assignments are illustrative display metadata:
+          IDs 001–010 appear on Line 01, 011–020 on Line 02, continuing through 091–100 on Line 10.
+          These are not verified factory assignments, model features or inputs to risk calculations.</p>
         <p>The saved 7-day Logistic Regression model uses chronological sigmoid calibration. Inference loads the saved
           model without retraining. A probability is not a reliability score; no validated alert thresholds or maintenance
           recommendations are provided.</p>

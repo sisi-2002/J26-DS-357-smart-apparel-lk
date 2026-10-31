@@ -24,8 +24,9 @@ describe('Component 3 historical prediction page', () => {
   it('renders at the component route without displaying a preset probability', () => {
     const fetch = mockResponse(); renderPage();
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Machine Failure-Risk Explorer');
-    expect(screen.getByLabelText('Synthetic data limitations')).toHaveTextContent('Synthetic Demo · Azure 2015 Data');
-    expect(screen.getByLabelText('Synthetic data limitations')).toHaveTextContent('not validated maintenance alerts');
+    expect(screen.queryByLabelText('Synthetic data limitations')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Prototype information')).toHaveTextContent('Production lines are illustrative');
+    expect(screen.getByLabelText('Prototype information')).toHaveTextContent('Synthetic Azure 2015 data');
     expect(screen.queryByTestId('failure-probability')).not.toBeInTheDocument();
     expect(fetch).not.toHaveBeenCalled();
   });
@@ -34,7 +35,7 @@ describe('Component 3 historical prediction page', () => {
     renderPage();
     const machines = screen.getByLabelText('Historical machine');
     expect(within(machines).getAllByRole('option')).toHaveLength(100);
-    expect(within(machines).getByRole('option', { name: 'Machine 100' })).toHaveValue('100');
+    expect(within(machines).getByRole('option', { name: 'Machine 100 · Line 10' })).toHaveValue('100');
     const times = within(screen.getByLabelText('Prediction snapshot')).getAllByRole('option');
     expect(times.map(option => (option as HTMLOptionElement).value)).toEqual([...PREDICTION_TIMESTAMPS]);
   });
@@ -67,6 +68,8 @@ describe('Component 3 historical prediction page', () => {
     expect(screen.getByText(/test fixture only/)).toBeInTheDocument();
     await userEvent.click(screen.getByText('Model & Data Info'));
     expect(screen.getByText('test-request')).toBeVisible();
+    expect(screen.getByText(/not real apparel-factory records/)).toBeVisible();
+    expect(screen.getByText(/not verified factory assignments/)).toBeVisible();
   });
 
   it('displays null H/R history without substituting zero', async () => {

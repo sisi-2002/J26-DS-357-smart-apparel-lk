@@ -27,15 +27,15 @@ for (const [size, viewport] of Object.entries(sizes)) {
     const controls = page.getByRole('region', { name: 'Choose a historical snapshot' });
     const rankingPanel = page.getByRole('region', { name: 'Highest Failure-Risk Machines (Next 7 Days)' });
     const predictionPanel = page.getByRole('region', { name: 'Selected Machine Prediction' });
-    const notice = page.getByLabel('Synthetic data limitations');
+    const notice = page.getByLabel('Prototype information');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Machine Failure-Risk Explorer');
     await expect(controls.getByLabel('Prediction snapshot')).toHaveCount(1);
     await expect(page.getByTestId('failure-probability')).toHaveCount(0);
     await expect(page.getByRole('table')).toHaveCount(0);
     await expect(notice).toBeVisible();
     await checkIndustrialTheme(page);
-    await expect(notice).toContainText('Synthetic Demo · Azure 2015 Data');
-    await expect(notice).toContainText('not validated maintenance alerts');
+    await expect(notice).toContainText('Synthetic Azure 2015 data');
+    await expect(notice).toContainText('Production lines are illustrative');
     await expect(controls.getByRole('button', { name: 'Comparing 100 machines…' })).toBeDisabled();
     const inputBox = (await controls.boundingBox())!;
     const left = (await rankingPanel.boundingBox())!;
@@ -74,6 +74,8 @@ for (const [size, viewport] of Object.entries(sizes)) {
     const detail: FailureRiskResponse = await detailHttp.json();
     expect(detail.predicted_failure_probability).toBe(machine.predicted_failure_probability);
     await expect(page.getByTestId('failure-probability')).toHaveText(`${(detail.predicted_failure_probability * 100).toFixed(2)}%`);
+    await expect(page.getByTestId('selected-machine-name')).toHaveText(`Machine ${String(machine.machine_id).padStart(3, '0')}`);
+    await expect(page.getByTestId('selected-machine-line')).toHaveText(`Line ${String(Math.floor((machine.machine_id - 1) / 10) + 1).padStart(2, '0')}`);
     await expect(view).toHaveAttribute('aria-current', 'true');
     await expect(view.locator('xpath=ancestor::tr')).toHaveAttribute('data-selected', 'true');
     await expect(view.locator('xpath=ancestor::tr').getByRole('cell').first()).toHaveCSS('background-color', 'rgb(217, 233, 232)');
@@ -98,6 +100,8 @@ for (const [size, viewport] of Object.entries(sizes)) {
     await research.locator('summary').focus();
     await page.keyboard.press('Enter');
     await expect(research.getByText(detail.request_id, { exact: true })).toBeVisible();
+    await expect(research.getByText(/not real apparel-factory records/)).toBeVisible();
+    await expect(research.getByText(/not verified factory assignments/)).toBeVisible();
     await checkTextContrast(page);
     // After keyboard interaction, every interactive control retains a visible
     // focus outline. The existing mobile heading-focus assertion stays intact.
@@ -114,7 +118,7 @@ for (const [size, viewport] of Object.entries(sizes)) {
     await checkNavigationFocus(page);
   });
 
-  test(`themed network errors preserve the demo caution and usable controls (${size})`, async ({ page }) => {
+  test(`themed network errors preserve the prototype note and usable controls (${size})`, async ({ page }) => {
     await page.setViewportSize(viewport);
     // Exercise unavailable transport, never manufacture a model response.
     await page.route('**/api/v1/component3/**', route => route.abort());
@@ -126,10 +130,13 @@ for (const [size, viewport] of Object.entries(sizes)) {
     await expect(page.getByRole('table')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Predict selected machine' })).toBeEnabled();
     await expect(page.getByRole('button', { name: 'Refresh ranking' })).toBeEnabled();
-    await expect(page.getByLabel('Synthetic data limitations')).toBeVisible();
+    await expect(page.getByLabel('Prototype information')).toBeVisible();
     await checkIndustrialTheme(page);
     await checkTextContrast(page);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: path.join(captures, `${size}-network-unavailable.png`), fullPage: true });
   });
 }
+
+// The LR regression workflow runs against the flag-off server.
+test.skip(process.env.E2E_EXPERIMENTAL_ENABLED === 'true', 'Stable LR workflow; exercised with flags off');

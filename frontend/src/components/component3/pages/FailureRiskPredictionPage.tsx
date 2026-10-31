@@ -5,7 +5,6 @@ import EvidenceSufficiencyPanel from '../components/EvidenceSufficiencyPanel';
 import FailureRiskCard from '../components/FailureRiskCard';
 import PredictionControls from '../components/PredictionControls';
 import ResearchDetails from '../components/ResearchDetails';
-import SyntheticDataNotice from '../components/SyntheticDataNotice';
 import TopRiskMachinesPanel from '../components/TopRiskMachinesPanel';
 import { MACHINE_IDS, PREDICTION_TIMESTAMPS } from '../data/demoOptions';
 import { useFailureRisk } from '../hooks/useFailureRisk';
@@ -54,7 +53,9 @@ export default function FailureRiskPredictionPage() {
     <div className="page-heading"><div><span className="eyebrow">COMPONENT 03 / PREDICTIVE MAINTENANCE</span>
       <h1>Machine Failure-Risk Explorer</h1><p>Compare historical machine risk, then explore the evidence behind a prediction.</p></div>
       <div className="period-stamp"><strong>2015</strong><span>HISTORICAL BENCHMARK</span></div></div>
-    <SyntheticDataNotice compact />
+    <p className="prototype-note" aria-label="Prototype information">
+      Prototype · Synthetic Azure 2015 data. Production lines are illustrative.
+    </p>
     <PredictionControls machineId={machineId} timestamp={timestamp}
       predicting={prediction.loading} comparing={ranking.loading} onPredict={submit}
       onCompare={() => { void ranking.rank(timestamp); }}

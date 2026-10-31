@@ -15,17 +15,27 @@ logger = logging.getLogger(__name__)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
+    configuration = settings if settings is not None else Settings.from_env()
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         application.state.component3_service = None
         try:
-            resources = load_resources(settings if settings is not None else Settings.from_env())
+            resources = load_resources(configuration)
             application.state.component3_service = FailurePredictionService(resources)
         except Exception:
             # Keep docs and future components available. No automatic model export.
             logger.exception("Component 3 unavailable: check C3_MODEL_PATH and C3_DATA_DIR")
+        if configuration.c3_experimental_multihorizon:
+            from app.components.component3.experimental.service import ExperimentalPredictionService
+            application.state.component3_experimental_service = None
+            try:
+                application.state.component3_experimental_service = ExperimentalPredictionService.load(configuration)
+            except Exception:
+                logger.exception("Experimental multi-horizon unavailable; existing Component 3 remains independent")
         yield
         application.state.component3_service = None
+        if configuration.c3_experimental_multihorizon:
+            application.state.component3_experimental_service = None
 
     application = FastAPI(
         title="SMART APPAREL LK — Component 3 research demo",
@@ -34,6 +44,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version="0.1.0", lifespan=lifespan,
     )
     application.include_router(component3_router)
+    if configuration.c3_experimental_multihorizon:
+        from app.components.component3.experimental.router import router as experimental_router
+        application.include_router(experimental_router)
 
     @application.get("/api/v1/health", tags=["Platform"])
     def health(request: Request):

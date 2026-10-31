@@ -268,13 +268,19 @@ On stacked layouts, explicit View actions focus and reveal the prediction headin
 Changing dates retains the existing reset/cancellation/stale-response behavior.
 
 The five evidence indicators are metric cards, including unchanged H/C/R caveats
-and null handling. The synthetic historical disclaimer is always rendered and
-sticks during dashboard scrolling as **Synthetic Demo · Azure 2015 Data**, with the
-visible caution that these are not validated maintenance alerts. **Model & Data Info** is a native keyboard-operable
+and null handling. A compact prototype note identifies synthetic Azure 2015 data
+and illustrative production lines. Full benchmark provenance and factory-validation
+limitations remain inside **Model & Data Info**, a native keyboard-operable
 disclosure, initially collapsed, containing separate prediction/ranking notes and
 provenance. Model hashes and request IDs are not shown outside that disclosure.
 Shared sidebar branding remains in MainLayout; feature presentation is scoped in
 component3.css. Existing API clients, request hooks and contracts are unchanged.
+
+`data/machineDisplay.ts` supplies neutral names and stable illustrative line labels
+for all 100 machines: IDs 001–010 map to Line 01, 011–020 to Line 02, through
+091–100 to Line 10. The selector, ranking and prediction card reuse this mapping.
+These are presentation labels, not verified factory assignments or ML features.
+Requests still contain only the existing numeric machine ID and historical timestamp.
 
 The dashboard browser suite checks empty, ranking-only and selected-prediction
 states at 1440px, 1024px and 390px widths. It also checks that comparison sends no
@@ -362,3 +368,20 @@ cd /d E:\J26-DS-357-smart-apparel-lk\frontend
 set E2E_BASE_URL=http://127.0.0.1:4173
 npm run test:e2e -- evidence-study.spec.ts
 ```
+
+## Optional isolated v3 multi-horizon preview
+
+Default: **off**. The existing 7-day dashboard, ranking and N2 page remain the
+normal application. For the separately audited v3 conditional HGB preview, set
+`VITE_C3_EXPERIMENTAL_MULTIHORIZON=true` before starting Vite or building, and
+enable the separate backend flag with its audited local artifact. Visit
+`/component3/predict-risk` (the former `/component3/experimental-risk` redirects
+there). The enabled main dashboard includes v3-only 7/14/30-day ranking and
+descriptive evidence. All three cards use that one v3 system; none uses
+the deployed LR. No fallback prediction is substituted when unavailable.
+
+Full Windows CMD setup, actual request/response, audit, safe-disable instructions
+and test commands: [experimental preview guide](../backend/EXPERIMENTAL_MULTIHORIZON.md).
+Current product behavior and API additions: [unified dashboard guide](../backend/UNIFIED_MULTIHORIZON.md).
+The public frontend flag controls visibility, not authentication. Restart/rebuild
+after changing it. Leave both flags unset/false for the normal app.

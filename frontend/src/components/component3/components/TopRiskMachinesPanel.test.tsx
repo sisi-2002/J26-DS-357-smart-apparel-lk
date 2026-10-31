@@ -22,8 +22,10 @@ describe('comparison probability presentation', () => {
     rows.forEach((row, index) => {
       const cells = within(row).getAllByRole('cell');
       expect(cells[1]).toHaveTextContent(String(result.machines[index].machine_id).padStart(3, '0'));
-      expect(cells[2]).toHaveTextContent(expected[index]);
-      expect(cells[2]).toHaveAttribute('title', `Returned probability: ${values[index]}`);
+      expect(cells[1]).toHaveTextContent('Machine');
+      expect(cells[2]).toHaveTextContent('Line 02');
+      expect(cells[3]).toHaveTextContent(expected[index]);
+      expect(cells[3]).toHaveAttribute('title', `Returned probability: ${values[index]}`);
       expect(row.querySelector('.probability-fill')).toHaveStyle({ width: `${values[index] * 100}%` });
       expect(row.querySelector('.probability-track')).toHaveAttribute('aria-hidden', 'true');
     });

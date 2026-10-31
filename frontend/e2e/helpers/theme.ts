@@ -22,8 +22,13 @@ export async function checkIndustrialTheme(page: Page) {
   const active = page.getByRole('navigation', { name: 'Main navigation' }).locator('a[aria-current="page"]');
   await expect(active).toHaveCSS('background-color', 'rgb(8, 127, 140)');
   await expect(active).toHaveCSS('box-shadow', 'rgb(217, 233, 232) 3px 0px 0px 0px inset');
-  await expect(page.getByLabel('Synthetic data limitations')).toHaveCSS('border-top-color', 'rgb(228, 167, 90)');
-  await expect(page.locator('.notice-icon')).toHaveCSS('background-color', 'rgb(228, 167, 90)');
+  if (await page.locator('.evidence-study').count()) {
+    await expect(page.getByLabel('Synthetic data limitations')).toHaveCSS('border-top-color', 'rgb(228, 167, 90)');
+    await expect(page.locator('.notice-icon')).toHaveCSS('background-color', 'rgb(228, 167, 90)');
+  } else {
+    await expect(page.getByLabel('Synthetic data limitations')).toHaveCount(0);
+    await expect(page.getByLabel('Prototype information')).toContainText('Production lines are illustrative');
+  }
   const primary = page.getByRole('button', { name: 'Predict selected machine' });
   if (await primary.count()) await expect(primary).toHaveCSS('background-color', 'rgb(8, 127, 140)');
 }

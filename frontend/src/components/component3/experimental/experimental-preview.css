@@ -1,0 +1,48 @@
+.experimental-preview { display: grid; gap: 22px; }
+.experimental-preview .preview-identifier { display: inline-block; color: var(--color-info); font-size: 12px; font-weight: 650; margin-bottom: 12px; }
+.experimental-preview h1 { max-width: 800px; }
+.experimental-preview .preview-heading > p { color: var(--color-text-muted); font-size: 14px; line-height: 1.7; margin-top: 12px; }
+.experimental-preview .preview-notice { border-left: 3px solid var(--color-warm-amber); padding: 8px 13px; font-size: 12px; line-height: 1.8; color: var(--color-warning-text); }
+.experimental-preview .preview-controls { display: grid; grid-template-columns: 1fr 1fr auto; align-items: start; gap: 20px; padding: 22px; }
+.experimental-preview .field { min-width: 0; }
+.experimental-preview label { display: block; color: var(--color-heading); font-size: 12px; font-weight: 600; margin-bottom: 9px; }
+.experimental-preview select { width: 100%; border: 1px solid var(--color-control-border); border-radius: 5px; padding: 0 10px; background: var(--color-surface); color: var(--color-heading); font-size: 13px; }
+.experimental-preview .field-hint { color: var(--color-text-muted); font-size: 11px; line-height: 1.7; margin-top: 7px; }
+.experimental-preview button { align-self: start; margin-top: 24px; border: 0; border-radius: 5px; padding: 0 18px; color: var(--color-surface); background: var(--color-primary); font-size: 13px; font-weight: 600; }
+.experimental-preview button:hover { background: var(--color-primary-hover); }
+.experimental-preview button:disabled { opacity: .75; cursor: wait; }
+.experimental-preview .preview-result { padding: 25px; }
+.experimental-preview .preview-result-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 22px; }
+.experimental-preview .preview-result-heading h2 span { color: var(--color-text-muted); font-size: 14px; font-weight: 400; }
+.experimental-preview .preview-result-heading > p { color: var(--color-text-muted); font-size: 12px; line-height: 1.6; }
+.experimental-preview .preview-horizons { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.experimental-preview .preview-horizon { border: 1px solid var(--color-border); border-top: 3px solid var(--color-primary); border-radius: 6px; padding: 22px 18px; }
+.experimental-preview h3 { color: var(--color-heading); font-size: 14px; font-weight: 600; margin: 0 0 16px; }
+.experimental-preview .preview-horizon > p { color: var(--color-link); font-size: clamp(27px, 3vw, 40px); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.035em; margin-bottom: 12px; }
+.experimental-preview .preview-horizon > span { display: block; color: var(--color-text-muted); font-size: 12px; line-height: 1.7; }
+.experimental-preview .preview-caption, .experimental-preview .preview-status { color: var(--color-text-muted); font-size: 13px; line-height: 1.8; }
+.experimental-preview .preview-caption { margin-top: 18px; }
+.experimental-preview .preview-info summary { padding: 19px 22px; color: var(--color-heading); font-size: 14px; font-weight: 600; cursor: pointer; }
+.experimental-preview .preview-info > div { border-top: 1px solid var(--color-border); padding: 20px 22px; color: var(--color-text-muted); font-size: 13px; line-height: 1.8; }
+.experimental-preview .preview-info p + p { margin-top: 12px; }
+.experimental-preview .preview-info dl { display: grid; grid-template-columns: 165px minmax(0, 1fr); gap: 12px 20px; margin-top: 22px; }
+.experimental-preview .preview-info dt { font-weight: 600; color: var(--color-heading); }
+.experimental-preview .preview-info dd { margin: 0; overflow-wrap: anywhere; }
+.experimental-preview .preview-return { font-size: 13px; width: fit-content; line-height: 1.8; }
+@media (max-width: 1150px) {
+  .experimental-preview .preview-controls { grid-template-columns: 1fr 1fr; }
+  .experimental-preview button { margin: 0; grid-column: 1 / -1; width: fit-content; }
+}
+@media (max-width: 860px) {
+  .experimental-preview .preview-horizons { grid-template-columns: 1fr; gap: 12px; }
+  .experimental-preview .preview-horizon { padding: 18px; }
+  .experimental-preview .preview-horizon > p { font-size: 34px; }
+}
+@media (max-width: 600px) {
+  .experimental-preview { gap: 18px; }
+  .experimental-preview .preview-controls { grid-template-columns: 1fr; padding: 18px; gap: 18px; }
+  .experimental-preview button { width: 100%; }
+  .experimental-preview .preview-result { padding: 18px; }
+  .experimental-preview .preview-info dl { grid-template-columns: 1fr; gap: 4px; }
+  .experimental-preview .preview-info dd + dt { margin-top: 14px; }
+}

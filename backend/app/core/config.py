@@ -11,6 +11,8 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 class Settings:
     c3_model_path: Path | None = None
     c3_data_dir: Path | None = None
+    c3_experimental_multihorizon: bool = False
+    c3_experimental_model_path: Path | None = None
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -24,4 +26,6 @@ class Settings:
         return cls(
             c3_model_path=configured_path("C3_MODEL_PATH"),
             c3_data_dir=configured_path("C3_DATA_DIR"),
+            c3_experimental_multihorizon=os.environ.get("C3_EXPERIMENTAL_MULTIHORIZON", "").strip().lower() == "true",
+            c3_experimental_model_path=configured_path("C3_EXPERIMENTAL_MODEL_PATH"),
         )
