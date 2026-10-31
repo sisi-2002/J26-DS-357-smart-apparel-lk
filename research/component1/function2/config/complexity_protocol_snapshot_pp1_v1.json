@@ -1,0 +1,181 @@
+{
+  "snapshot_label": "Fixed Provisional PP1 Exploratory Complexity Protocol -- NOT Expert Validated",
+  "status": "human_expert_validation_pending",
+  "is_active": false,
+  "is_final": false,
+  "generated_at_utc": "2026-10-18T10:37:20.417692+00:00",
+  "stage": "F2.2C-QA Task 8",
+  "protocol_version": "PP1_exploratory_v1",
+  "generation_note": "This snapshot re-fits, re-weights, and re-thresholds NOTHING. Every value below is copied verbatim from an already-produced artifact; see each section's 'source' field for exactly which file it came from.",
+  "feature_definitions": {
+    "shared_module_reference": "research/component1/complexity_calibration/src/complexity_features.py (UNTOUCHED, never modified by this or any Function 2 stage)",
+    "mask_aware_glcm_correction_module": "research/component1/function2/complexity/masked_glcm.py",
+    "background_region_module": "research/component1/function2/complexity/background_region.py",
+    "background_features_module": "research/component1/function2/complexity/background_features.py",
+    "three_features": [
+      "luminance_variation",
+      "glcm_entropy",
+      "colour_variation"
+    ],
+    "extraction_protocol": {
+      "resize_long_edge": 512,
+      "interpolation": "INTER_AREA",
+      "glcm_levels": 64,
+      "glcm_distances": [
+        1
+      ],
+      "glcm_angles": [
+        0.0,
+        0.785398,
+        1.570796,
+        2.356194
+      ],
+      "glcm_symmetric": true,
+      "glcm_normed": true,
+      "entropy_log_base": 2,
+      "protocol_version": "proto_v0.1_provisional"
+    }
+  },
+  "normalization_parameters": {
+    "source": "research/component1/function2/config/calibration_v1.json",
+    "method": "zscore (population mean/std, ddof=0, over the eligible TRAIN-split distribution only)",
+    "per_feature": {
+      "luminance_variation": {
+        "mean": 36.7403900799628,
+        "std": 16.32109846115975
+      },
+      "glcm_entropy": {
+        "mean": 6.373337942470548,
+        "std": 1.6842709755758238
+      },
+      "colour_variation": {
+        "mean": 4.985333406910759,
+        "std": 6.479936315937947
+      }
+    }
+  },
+  "weights": {
+    "source": "research/component1/function2/config/calibration_v1.json",
+    "values": {
+      "luminance_variation": 0.3333333333333333,
+      "glcm_entropy": 0.3333333333333333,
+      "colour_variation": 0.3333333333333333
+    },
+    "label": "equal_weighting_default_candidate_NOT_validated"
+  },
+  "group_thresholds": {
+    "source": "research/component1/function2/config/calibration_v1.json",
+    "method": "tertile_quantiles_of_eligible_training_composite_score_distribution",
+    "simple_max": -0.37460474461691057,
+    "moderate_max": 0.2505520866819552,
+    "label": "candidate_NOT_expert_validated",
+    "boundary_adjacent_margin": 0.06564740267477663
+  },
+  "extraction_eligibility_configuration": {
+    "source": "research/component1/function2/complexity/eligibility.py (F2.1B2 Task 1, policy_version=eligibility_policy_v1_PROVISIONAL)",
+    "policy_version": "eligibility_policy_v1_PROVISIONAL",
+    "seven_checks": [
+      "split_confirmed_train",
+      "annotation_resolved",
+      "luminance_valid",
+      "glcm_valid",
+      "colour_valid",
+      "background_coverage_ok",
+      "glcm_pairs_ok"
+    ],
+    "max_defect_coverage_rule": 0.7,
+    "min_valid_pairs_rule": 500
+  },
+  "dataset_provenance": {
+    "source": "research/component1/function2/results/calibration/train_features_v1_full_metadata.json",
+    "split": "TRAIN",
+    "train_split_total_images": 1900,
+    "n_processed": 1900,
+    "n_eligible_used_for_calibration": 1747,
+    "sampling_method": "Deterministic: ALL (or, if --limit was passed, the first N sorted by image_id ascending) TRAIN-split rows of train_manifest.csv. No RNG. No held-out split touched -- every image_id is re-resolved through assert_train_split() against the authoritative split_manifest.csv before any pixels are opened."
+  },
+  "tertile_group_counts_baseline_equal_weighting": {
+    "Simple": 583,
+    "Moderate": 582,
+    "High": 582
+  },
+  "version_and_checksums": {
+    "f21b3_checksum_baseline_source": "research/component1/function2/config/b3_artifact_checksums_baseline.json",
+    "f21b3_checksum_baseline_purpose": "SHA-256 provenance baseline for F2.1B2 production calibration artifacts. Any mismatch on a later verify() run means one of these files changed since this baseline was recorded -- investigate before trusting any downstream analysis.",
+    "f21b3_checksum_baseline_artifacts": {
+      "train_features_v1_full_csv": {
+        "relative_path": "research/component1/function2/results/calibration/train_features_v1_full.csv",
+        "sha256": "72e5e4258293aed84a3551e0a16fe1fd5744f303dffa356b91c51d43c6fc76a5"
+      },
+      "train_features_v1_full_metadata_json": {
+        "relative_path": "research/component1/function2/results/calibration/train_features_v1_full_metadata.json",
+        "sha256": "8f1f0d199494ad78a600bf994444d38f39973f8e073b18ceff5d848b9e4460cf"
+      },
+      "train_composite_scores_v1_csv": {
+        "relative_path": "research/component1/function2/results/calibration/train_composite_scores_v1.csv",
+        "sha256": "3b54d3edbb478c88926de4301be8c70493277c0c40f83a72044ea26586d71fb8"
+      },
+      "calibration_scoring_summary_v1_json": {
+        "relative_path": "research/component1/function2/results/calibration/calibration_scoring_summary_v1.json",
+        "sha256": "053b19e1606f58697a50dd0c082b77b9623c58fb76a0520efe8910905c7c4c18"
+      },
+      "calibration_v1_json": {
+        "relative_path": "research/component1/function2/config/calibration_v1.json",
+        "sha256": "015b5c1fd2b39ef23739ab52256995d8db09fc150fd22a846a5bcc9ed976342f"
+      },
+      "expert_review_package_v1_csv": {
+        "relative_path": "research/component1/function2/results/calibration/expert_review_package_v1.csv",
+        "sha256": "04f9f7e63a166fcd20ed484232eb5ec7f091104fd36373e8867d29a4e09c5e9d"
+      },
+      "train_distribution_summary_v1_json": {
+        "relative_path": "research/component1/function2/results/calibration/train_distribution_summary_v1.json",
+        "sha256": "9de630445d03de24a6d3386316b203990d4b77d30d7911239e4483d136fd0a92"
+      },
+      "scale_sensitivity_v1_csv": {
+        "relative_path": "research/component1/function2/results/calibration/scale_sensitivity_v1.csv",
+        "sha256": "32203161dd602539b2d2a7f9a27cec84bb0480cd70f8d263a9c48365650f966b"
+      }
+    },
+    "note": "This snapshot references (does not recompute) the F2.1B3 checksum baseline. Task 9 of this QA stage separately re-verifies all_match=True against this exact baseline as a regression check."
+  },
+  "weighting_sensitivity_limitation": {
+    "headline": "Only 534/1747 eligible TRAIN images (30.6%) keep the same Simple/Moderate/High complexity-group label under ALL 7 tested weighting schemes (baseline equal-weight + 3 plausible alternatives + 3 extreme single-feature-only bounds). 1213/1747 (69.4%) change group under at least one plausible-or-extreme alternative weighting.",
+    "n_eligible_images": 1747,
+    "n_stable_across_all_7_schemes": 534,
+    "n_unstable_at_least_1_scheme": 1213,
+    "fraction_stable": 0.3057,
+    "fraction_unstable": 0.6943,
+    "weighting_schemes_tested": [
+      "baseline_equal",
+      "alt_A_emphasise_luminance_0.6_0.2_0.2",
+      "alt_B_emphasise_glcm_0.2_0.6_0.2",
+      "alt_C_emphasise_colour_0.2_0.2_0.6",
+      "extreme_luminance_only_1_0_0",
+      "extreme_glcm_only_0_1_0",
+      "extreme_colour_only_0_0_1"
+    ],
+    "source": "research/component1/function2/results/calibration/b3_task2_weight_sensitivity_summary.json + F2.1B3 stability audit (pp1_xai_evaluation.ipynb, Task B3 sections)"
+  },
+  "f21b4r_human_ai_agreement_results": {
+    "n_reconciled": 30,
+    "sample_size_caveat": "n=30 is a small, intentionally-selected (not randomly sampled) set. These agreement numbers describe this specific 30-image blind-review batch ONLY and must NOT be extrapolated to claim validation of the full ~1,747-image training calibration or the complexity protocol in general.",
+    "overall_exact_agreement_percent": 66.66666666666667,
+    "cohens_kappa_unweighted": 0.49999999999999994,
+    "weighted_kappa_linear": 0.5609756097560975,
+    "by_weight_stability": {
+      "stable_all_7_schemes": {
+        "n": 5,
+        "n_agree": 4,
+        "agreement_fraction": 0.8
+      },
+      "unstable_at_least_1_scheme": {
+        "n": 25,
+        "n_agree": 16,
+        "agreement_fraction": 0.64
+      }
+    },
+    "source": "research/component1/function2/results/review/reconciliation_v1/agreement_metrics.json"
+  },
+  "expert_review_status": "pending",
+  "must_not_be_adjusted_using": "any Grad-CAM/Grad-CAM++/XAI-metric result"
+}

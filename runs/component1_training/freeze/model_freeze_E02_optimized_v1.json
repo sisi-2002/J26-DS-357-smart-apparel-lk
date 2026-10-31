@@ -1,0 +1,174 @@
+{
+  "freeze_manifest_version": "1.0.0",
+  "freeze_id": "F1.1_model_selection_freeze_v1",
+  "created_at": "2026-10-15T10:35:00+00:00",
+  "milestone": "Function 1 model-selection milestone (NOT full Function 1 completion)",
+
+  "selected_experiment": {
+    "experiment_id": "E02_optimized",
+    "run_directory": "runs/component1_training/E02_optimized",
+    "original_checkpoint_path": "runs/component1_training/E02_optimized/weights/best.pt",
+    "checkpoint_sha256": "c578003ca158a892ac90de3db7b7552aefabd5292e311c6dd0c76faf717628d3",
+    "checkpoint_size_bytes": 6503722,
+    "checkpoint_size_mb": 6.20,
+    "architecture": "YOLOv8n",
+    "base_weights": "yolov8n.pt"
+  },
+
+  "rejected_candidates": [
+    {
+      "experiment_id": "E01_baseline",
+      "run_directory": "runs/component1_training/E01_baseline_v2",
+      "checkpoint_sha256": "cecf6223bc6177a6d8c1a06fa85cefe23c424bf0d27f36f6f55fe6ec65a45f2d",
+      "reason": "Lower mAP50-95 (0.3757 vs 0.4205) and lower on every per-class AP50 and on precision/recall."
+    },
+    {
+      "experiment_id": "E03_high_resolution",
+      "run_directory": "runs/component1_training/E03_high_resolution",
+      "checkpoint_sha256": "ab1b28bcc2ea546e2b4405b01a17e4b1281111db66dd45de789e77bd7848bd53",
+      "reason": "Lowest mAP50-95 (0.3071) despite higher input resolution (704 vs 640) and longest training time (6.2h); higher resolution did not translate into better validation performance on this dataset."
+    }
+  ],
+
+  "dataset_identity": {
+    "version_id": "chenab_detection_training_v1",
+    "dataset_root": "data-preprocessing/master_fabric_dataset/processed/chenab_detection_training_v1",
+    "data_yaml_sha256": "f416d3240383b6e363cd2d43a24c2e84cf9aea751329e9bd80497a75d0e32ba8",
+    "split_manifest_sha256": "c8cd3587d37ce24d8d7930397d991987dfcf16ffc34fa69ea1aa25f69dea4272",
+    "split_counts": {
+      "train_images": 1900,
+      "valid_images": 377,
+      "test_images_locked": 378
+    },
+    "split_group_counts": {
+      "train_groups": 684,
+      "valid_groups": 314,
+      "test_groups": 314
+    },
+    "source_family_leakage_check": {
+      "train_valid_group_overlap": 0,
+      "train_test_group_overlap": 0,
+      "valid_test_group_overlap": 0,
+      "status": "verified_disjoint"
+    },
+    "class_names_and_order": [
+      "baekra", "color issues", "contamination", "cut",
+      "gray stitch", "selvet", "stain"
+    ],
+    "num_classes": 7,
+    "identical_across_all_three_experiments": true
+  },
+
+  "training_configuration_reference": {
+    "config_file": "runs/component1_training/training_pipeline/configs/e02_optimized.yaml",
+    "config_sha256": "8c3129b49720e4e0c91b9bcfb906c51a629cc46d1f8403f2d168aac18c3d01bc",
+    "experiment_metadata_file": "runs/component1_training/E02_optimized/experiment_metadata.json",
+    "key_hyperparameters": {
+      "imgsz": 640,
+      "batch": 4,
+      "epochs_configured": 200,
+      "patience": 40,
+      "optimizer": "AdamW",
+      "lr0": 0.0005,
+      "lrf": 0.01,
+      "cos_lr": true,
+      "warmup_epochs": 3.0,
+      "weight_decay": 0.0005,
+      "momentum": 0.937,
+      "amp": true,
+      "seed": 42,
+      "deterministic": true,
+      "close_mosaic": 10
+    },
+    "training_duration_seconds": 16943,
+    "training_duration_human": "4.7 hours",
+    "peak_gpu_memory_mb_training": 736
+  },
+
+  "validation_protocol": {
+    "validation_script": "runs/component1_training/training_pipeline/validate_yolov8n.py",
+    "split_evaluated": "valid",
+    "test_split_evaluated": false,
+    "test_split_status": "LOCKED — not inspected or evaluated during this task",
+    "imgsz_used_for_validation": 640,
+    "batch_used_for_validation": 4,
+    "note_on_imgsz": "Each experiment was validated at its own training imgsz (E01/E02=640, E03=704), which is standard practice (models are evaluated at native resolution). This means mAP comparisons are fair model-to-model comparisons, but do not isolate resolution as a variable.",
+    "nms_iou_threshold": 0.7,
+    "conf_threshold": "ultralytics default (no override)",
+    "ultralytics_version": "8.4.177",
+    "torch_version": "2.9.1+cu126",
+    "validation_timestamp": "2026-10-15T01:40:42.799405+00:00"
+  },
+
+  "validation_results": {
+    "E01_baseline": {
+      "mAP50": 0.7108, "mAP50_95": 0.3757, "precision": 0.7192, "recall": 0.6613,
+      "per_class_ap50": {
+        "baekra": 0.7056, "color issues": 0.7489, "contamination": 0.9078,
+        "cut": 0.6508, "gray stitch": 0.592, "selvet": 0.51, "stain": 0.8606
+      }
+    },
+    "E02_optimized": {
+      "mAP50": 0.7472, "mAP50_95": 0.4205, "precision": 0.7471, "recall": 0.7153,
+      "per_class_ap50": {
+        "baekra": 0.7596, "color issues": 0.7324, "contamination": 0.9599,
+        "cut": 0.7106, "gray stitch": 0.6026, "selvet": 0.6012, "stain": 0.8644
+      }
+    },
+    "E03_high_resolution": {
+      "mAP50": 0.639, "mAP50_95": 0.3071, "precision": 0.6772, "recall": 0.6157,
+      "per_class_ap50": {
+        "baekra": 0.6578, "color issues": 0.7296, "contamination": 0.8151,
+        "cut": 0.5472, "gray stitch": 0.5189, "selvet": 0.3881, "stain": 0.8162
+      }
+    }
+  },
+
+  "resource_constraint_assessment": {
+    "model_size_constraint": "No explicit maximum documented. All three checkpoints are 6.20 MB (identical YOLOv8n architecture) — not a discriminating factor.",
+    "inference_latency_constraint": "docs/architecture/component1_implementation_plan.md risk register states: 'CPU-only inference latency: if >2s, require GPU or batch mode.' This has NOT been benchmarked for any of the three experiments — Phase 5.2 (Performance benchmarking) is not yet executed.",
+    "measured_values": {
+      "training_peak_gpu_memory_mb": {"E01": 688, "E02": 736, "E03": 537},
+      "model_size_mb": {"E01": 6.20, "E02": 6.20, "E03": 6.20}
+    },
+    "unavailable_values": [
+      "Inference latency (ms/image) — not benchmarked",
+      "Inference FPS — not benchmarked",
+      "Inference-time GPU/CPU memory — not measured (only training-time peak GPU memory is recorded)",
+      "CPU-only latency — not measured"
+    ],
+    "conclusion": "E02 meets all currently-measured resource indicators (identical model size, moderate training memory). No benchmarked resource constraint conflicts with E02 selection. Formal latency/FPS benchmarking remains a Phase 5.2 task, independent of this selection."
+  },
+
+  "selection_rationale": {
+    "criterion": "Highest validation mAP50-95 on a consistent, leakage-verified validation set, confirmed by higher precision, recall, and every per-class AP50.",
+    "evidence_summary": "E02_optimized outperforms both E01_baseline and E03_high_resolution on all five evaluated metrics (mAP50, mAP50-95, precision, recall) and all seven per-class AP50 values, with no mixed or ambiguous result requiring tie-breaking.",
+    "weakest_class": "selvet (AP50=0.6012) — above the 0.5 minimum flag threshold used by select_best_model.py, no weak-class warning triggered.",
+    "automated_confirmation": "runs/component1_training/training_pipeline/select_best_model.py independently ranked E02_optimized first by validation mAP50-95 (0.4205), matching this manual verification.",
+    "decision": "SELECT E02_optimized as the final research detector for Component 1 Function 1."
+  },
+
+  "software_environment_provenance": {
+    "os": "Windows 11",
+    "python": "3.12.10",
+    "torch": "2.9.1+cu126",
+    "ultralytics": "8.4.177",
+    "numpy": "2.5.2",
+    "pyyaml": "6.0.3",
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "identical_across_all_three_experiments": true
+  },
+
+  "unverified_assumptions_and_limitations": [
+    "Inference latency/FPS/memory have not been benchmarked for E02 — required before any real-time or CPU-deployment claims (Phase 5.2, not yet executed).",
+    "Validation was performed on the valid split only; the locked test split has NOT been evaluated for any experiment and remains untouched per the locking policy.",
+    "Validation duration_seconds recorded in validation_valid_metrics.json (36.7s for E02) includes model load, plotting, and JSON export overhead — it is NOT a per-image inference latency measurement and must not be used as such.",
+    "Two provenance-flagged images noted in the original architecture risk register (augmented_stock-photo-blue-jeans-... and augmented_Fabric5_jpg) are present in the frozen split_manifest.csv as singleton groups in different splits (valid and train respectively) with zero cross-split group overlap — consistent with resolution via the cross-group review process (data-preprocessing/reports/cross_group_related_20261008_114158_369379/cross_group_review_FINAL_COMPLETION_20261011.txt), but this freeze task did not re-audit that review in full depth.",
+    "Complexity-stratified XAI evaluation (A1-A6 pipeline) has not yet been run against this checkpoint — that is separate, subsequent work gated on this model freeze.",
+    "This freeze records the training-run checkpoint as-is; no quantization, pruning, or export (ONNX/TorchScript) has been performed or verified."
+  ],
+
+  "checkpoint_integrity_note": "The original checkpoint at runs/component1_training/E02_optimized/weights/best.pt was NOT moved, renamed, or modified. This manifest is a read-only, additive record pointing to that original path and its SHA256 hash for future integrity verification.",
+
+  "relocation_note_20261017": "This manifest (and the supporting training scripts/configs/reports it references) was relocated from the legacy research/component1/training/ directory into runs/component1_training/ (this file now lives under runs/component1_training/freeze/, scripts/configs/reports under runs/component1_training/training_pipeline/) as part of removing the legacy directory, which also contained an accidentally-committed .venv and was not a canonical artifact location. Only path strings inside this manifest were updated to match the new locations; checkpoint_sha256 and all other recorded values are unchanged. The selected checkpoint at runs/component1_training/E02_optimized/weights/best.pt was not touched. A full backup of the original legacy directory (including .venv) was made before deletion; see the external backup manifest for original paths and hashes."
+}

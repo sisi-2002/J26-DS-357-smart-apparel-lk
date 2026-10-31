@@ -1,0 +1,51 @@
+{
+  "experiment_id": "E03_high_resolution",
+  "timestamp": "2026-10-15T01:51:44.909807+00:00",
+  "system": {
+    "os": "Windows 11",
+    "python": "3.12.10",
+    "interpreter": "D:\\Fabric defect detection\\J26-DS-357-smart-apparel-lk\\research\\component1\\training\\.venv\\Scripts\\python.exe",
+    "pkg_torch": "2.9.1+cu126",
+    "pkg_ultralytics": "8.4.177",
+    "pkg_numpy": "2.5.2",
+    "pkg_opencv-python-headless": "NOT_INSTALLED",
+    "pkg_pyyaml": "6.0.3",
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU"
+  },
+  "config": {
+    "experiment_id": "E03_high_resolution",
+    "model": "yolov8n.pt",
+    "imgsz": 704,
+    "batch": 2,
+    "epochs": 150,
+    "patience": 35,
+    "optimizer": "AdamW",
+    "lr0": 0.001,
+    "lrf": 0.01,
+    "cos_lr": true,
+    "warmup_epochs": 3.0,
+    "weight_decay": 0.0005,
+    "momentum": 0.937,
+    "amp": true,
+    "workers": 0,
+    "cache": false,
+    "seed": 42,
+    "deterministic": true,
+    "close_mosaic": 10,
+    "save_period": -1
+  },
+  "dataset": {
+    "path": "D:\\Fabric defect detection\\J26-DS-357-smart-apparel-lk\\data-preprocessing\\master_fabric_dataset\\processed\\chenab_detection_training_v1",
+    "version": "chenab_detection_training_v1",
+    "data_yaml_hash": "f416d3240383b6e363cd2d43a24c2e84cf9aea751329e9bd80497a75d0e32ba8"
+  },
+  "augmentation": {
+    "policy_hash": "7487d07b45bc569ab19550910b7682e286457be642ab91439b5494a0cac30e96",
+    "yaml_hash": "3eb7519a842906cdbf2223e87ee8c6f2692acb24c8ff9c7497eafc76ce98fa38"
+  },
+  "output_dir": "D:\\Fabric defect detection\\J26-DS-357-smart-apparel-lk\\runs\\component1_training\\E03_high_resolution",
+  "derived_data_yaml": "D:\\Fabric defect detection\\J26-DS-357-smart-apparel-lk\\runs\\component1_training\\E03_high_resolution\\data.yaml",
+  "training_duration_seconds": 22470,
+  "training_duration_human": "6.2 hours",
+  "peak_gpu_memory_mb": 537
+}

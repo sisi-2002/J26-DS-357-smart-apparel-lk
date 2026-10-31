@@ -1,2 +1,5 @@
 # J26-DS-357-smart-apparel-lk
 Smart Apparel-LK is an Explainable AI framework for Sri Lankan apparel manufacturing, integrating fabric defect detection, fabric waste prediction and marker optimization, predictive maintenance, and Order Acceptance and Workforce Allocation to enable transparent, proactive, and data-driven production decisions.
+
+
+

@@ -1,0 +1,25 @@
+# E02 — Controlled Optimization
+# Adjust ONE primary factor based on E01 results
+# Starting point: lower learning rate candidate
+# Update this config after analyzing E01 training curves
+
+experiment_id: E02_optimized
+model: yolov8n.pt
+imgsz: 640
+batch: 4
+epochs: 200
+patience: 40
+optimizer: AdamW
+lr0: 0.0005
+lrf: 0.01
+cos_lr: true
+warmup_epochs: 3.0
+weight_decay: 0.0005
+momentum: 0.937
+amp: true
+workers: 0
+cache: false
+seed: 42
+deterministic: true
+close_mosaic: 10
+save_period: -1

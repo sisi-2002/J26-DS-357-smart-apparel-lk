@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+.venv*/
+venv/
+
+# Environment files (may contain credentials)
+.env
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Storage (uploaded images, generated overlays)
+storage/
+
+# Model weights (large binaries)
+*.pt
+*.pth
+*.onnx
+
+# Pytest
+.pytest_cache/
+
+# Processed datasets (large, machine-specific paths)
+data-preprocessing/fabricDD_processed_*/
+data-preprocessing/training_runs/
+data-preprocessing/.venv*/
+
+
+

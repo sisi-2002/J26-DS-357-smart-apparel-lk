@@ -1,0 +1,24 @@
+# E03 — Higher Resolution Experiment
+# Tests whether 704px improves small/thin defect detection
+# Batch 2 for 4 GB VRAM safety; fallback to 1 if OOM
+
+experiment_id: E03_high_resolution
+model: yolov8n.pt
+imgsz: 704
+batch: 2
+epochs: 150
+patience: 35
+optimizer: AdamW
+lr0: 0.001
+lrf: 0.01
+cos_lr: true
+warmup_epochs: 3.0
+weight_decay: 0.0005
+momentum: 0.937
+amp: true
+workers: 0
+cache: false
+seed: 42
+deterministic: true
+close_mosaic: 10
+save_period: -1
