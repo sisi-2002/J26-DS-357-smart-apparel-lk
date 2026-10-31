@@ -4,8 +4,8 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig(({ mode }) => {
   const env = { ...loadEnv(mode, process.cwd(), ''), ...process.env };
-  const target = env.API_PROXY_TARGET;
-  const proxy = target ? { '/api': { target, changeOrigin: true } } : undefined;
+  const target = env.API_PROXY_TARGET || 'http://127.0.0.1:8000';
+  const proxy = { '/api': { target, changeOrigin: true } };
 
   return {
     plugins: [react()],
@@ -13,6 +13,7 @@ export default defineConfig(({ mode }) => {
     preview: { proxy },
     test: {
       environment: 'jsdom',
+      globals: true,
       setupFiles: ['./src/test/setup.ts'],
       include: ['src/**/*.test.{ts,tsx}'],
       restoreMocks: true,

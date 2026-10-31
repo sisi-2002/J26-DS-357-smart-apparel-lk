@@ -1,0 +1,35 @@
+{
+  "run_label": "F2.2B -- PP1 Exploratory Complexity-Stratified VALID-Split Evaluation Sample",
+  "stage": "F2.2B",
+  "purpose": "PP1_exploratory_XAI_evaluation",
+  "source_protocol": "PP1_exploratory_v1",
+  "source_snapshot_path": "research/component1/function2/config/complexity_protocol_snapshot_pp1_v1.json",
+  "source_snapshot_sha256": "61cd1caaeb380a7707e53a66c82877d76c590c8de0f1a33180365f7d1e3fc6fd",
+  "expert_validated": false,
+  "final_protocol": false,
+  "train_calibration_refitted": false,
+  "validation_rethresholding_performed": false,
+  "xai_based_tuning_performed": false,
+  "caveats_carried_forward_by_reference": {
+    "weighting_sensitivity_caveat": {
+      "summary": "Only 30.6% of eligible TRAIN images keep the same complexity group under all 7 tested weighting schemes (69.4% are unstable to weighting choice). This F2.2B stage additionally runs the SAME 7 schemes against the VALID eligible sample as a descriptive diagnostic only (see Task 6 report) -- it does not change any assigned VALID label.",
+      "full_text_source": "research/component1/function2/config/complexity_protocol_snapshot_pp1_v1.json#/weighting_sensitivity_limitation",
+      "do_not_duplicate_verbatim": true
+    },
+    "ai_vs_algorithm_reconciliation_caveat": {
+      "summary": "n=30 small, intentionally-selected (not random) AI-vs-algorithm reconciliation sample: 66.7% exact agreement, Cohen's kappa 0.50, weighted kappa 0.561. Not extrapolatable to the full calibration or to this VALID sample.",
+      "full_text_source": "research/component1/function2/config/complexity_protocol_snapshot_pp1_v1.json#/f21b4r_human_ai_agreement_results",
+      "do_not_duplicate_verbatim": true
+    },
+    "expert_validation_status": {
+      "summary": "Protocol status remains 'human_expert_validation_pending'; is_active=false, is_final=false in the source snapshot. F2.2B does not change this status.",
+      "full_text_source": "research/component1/function2/config/complexity_protocol_snapshot_pp1_v1.json#/status"
+    }
+  },
+  "scope_notes": [
+    "This run-specific record applies the FROZEN PP1_exploratory_v1 normalization parameters, equal weights, and tertile thresholds (read from source_snapshot_path at runtime, not re-typed as independent constants) to the VALID split ONLY.",
+    "No TRAIN recalibration, no VALID-derived re-thresholding, and no XAI-outcome-based tuning is performed at this stage or any prior stage referenced by this file.",
+    "This file does not copy/duplicate the snapshot's numeric values -- see source_snapshot_path for the authoritative values, verified against source_snapshot_sha256 by this stage's Task 1 integrity check."
+  ],
+  "generated_by": "F2.2B Task 2 (research/component1/function2/dataset/f22b_task1_integrity_verification.py produces the companion checksum verification; this file is written once, by hand/tooling, referencing that verification's result)"
+}

@@ -4,7 +4,9 @@
 .venv/
 __pycache__/
 *.pyc
+*.pyo
 .pytest_cache/
+storage/
 *.joblib
 *.pkl
 *.csv

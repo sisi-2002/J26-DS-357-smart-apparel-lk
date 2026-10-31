@@ -1,8 +1,29 @@
-# Match the trusted artifact's export environment. Reconcile centrally at integration.
+# Preserve Component 3's trusted model export environment for numerical packages.
 numpy==2.2.6
 pandas==2.3.2
 scikit-learn==1.7.1
 joblib==1.5.1
+
+# Shared API and Component 1 configuration, uploads, inspection, and XAI.
 fastapi==0.116.1
+uvicorn[standard]==0.35.0
 pydantic==2.13.4
-uvicorn==0.35.0
+pydantic-settings==2.9.1
+python-dotenv==1.1.0
+python-multipart==0.0.20
+httpx==0.28.1
+ultralytics==8.4.175
+torch==2.14.1
+opencv-python-headless==4.11.0.86
+Pillow==12.3.0
+
+# Component 1 persistence and migrations.
+sqlalchemy[asyncio]==2.1.4
+asyncpg==0.32.0
+alembic==1.15.2
+psycopg2-binary==2.9.10
+
+# Backend tests use disposable SQLite databases, never the application database.
+pytest==8.3.5
+pytest-asyncio==0.25.3
+aiosqlite==0.22.1
