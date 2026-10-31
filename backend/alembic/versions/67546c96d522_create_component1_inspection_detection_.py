@@ -1,7 +1,7 @@
 """create component1 inspection detection explanation tables
 
 Revision ID: 67546c96d522
-Revises: 
+Revises:
 Create Date: 2026-10-12 20:39:37.128977
 
 """

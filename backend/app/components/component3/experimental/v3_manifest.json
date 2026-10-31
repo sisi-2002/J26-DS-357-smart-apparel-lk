@@ -1,0 +1,18 @@
+{
+  "release": "v3-run_003-unpooled-hgb-sigmoid",
+  "sklearn": "1.7.1",
+  "artifact_sha256": "28d55ba04e18a8358afc3fe786da8f39db1436513261b20a2385f2a2042a2a61",
+  "source_sha256": {
+    "research/component3/scripts/build_and_evaluate.py": "dea4900cf7890e3128ce92cb0f937ff0fe61a2f1fd5823b059234aa11ebec745",
+    "research/component3/scripts/model_inference.py": "763912c37d5243a6e56b63cff3f83b4953c94ecd894afeec23c845ed111ffaa7",
+    "research/component3/experimental_multihorizon/hazard_model.py": "1b96726edd88b75c7109e94f6e418c84cb953c11733d91aa0d0223c165025612",
+    "research/component3/experimental_multihorizon_v2/hazard_v2.py": "0a9f9714b9bbfe5f589ed9cf9f220076e30bd72b121ab38fabb9d11a9b93e0fc",
+    "research/component3/experimental_multihorizon_v3/methods_v3.py": "e26db66d16c1afc053a3e6f6d0ce9e678755b1e30bdbf052b774c721a3d8cf15"
+  },
+  "data_sha256": {
+    "PdM_errors.csv": "9c2a2a010ad77227e2bb0c94e7971bca78810790ddd1f28a8bee4f12c2f62370",
+    "PdM_failures.csv": "0c6c31a4fd52ef2df95ad7c44e8b0c8c32917bcef29ba5a1ba3ba45531ded3b7",
+    "PdM_machines.csv": "5e8e1571c4999bf88abb7cae3925964c218d946fe851a9a100bb3d19330652bc",
+    "PdM_maint.csv": "481ed4e155f609e6ca6130754d2c035453093902a507cce5b3f3e235995f1db6"
+  }
+}

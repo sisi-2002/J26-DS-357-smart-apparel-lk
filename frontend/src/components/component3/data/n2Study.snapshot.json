@@ -1,0 +1,966 @@
+{
+  "schema_version": "n2-study-v1",
+  "model_family": "original_uncalibrated_n2_pilot",
+  "horizon_days": 7,
+  "C_constant_pct": 100,
+  "cohort": {
+    "first_snapshot": "2015-09-02 06:00:00",
+    "last_snapshot": "2015-11-25 06:00:00"
+  },
+  "conditions": [
+    {
+      "id": "full",
+      "label": "Full observed history",
+      "short_label": "Full",
+      "lookback_days": null,
+      "snapshots": 1300,
+      "machines": 100,
+      "dates": 13,
+      "positive_cases": 146,
+      "brier": 0.09246034352331592,
+      "evidence": {
+        "H": {
+          "rho": 0.0186843183663586,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 261,
+              "n_machines": 47,
+              "evidence_mean": 402.7739463601533,
+              "evidence_min": 323.0,
+              "evidence_max": 434.0,
+              "mean_squared_prediction_error_brier": 0.10004151083091191,
+              "observed_failure_prevalence": 0.1111111111111111
+            },
+            {
+              "index": 2,
+              "n_snapshots": 260,
+              "n_machines": 96,
+              "evidence_mean": 449.93461538461537,
+              "evidence_min": 435.0,
+              "evidence_max": 462.0,
+              "mean_squared_prediction_error_brier": 0.09967527127644753,
+              "observed_failure_prevalence": 0.13076923076923078
+            },
+            {
+              "index": 3,
+              "n_snapshots": 259,
+              "n_machines": 89,
+              "evidence_mean": 472.1544401544402,
+              "evidence_min": 463.0,
+              "evidence_max": 483.0,
+              "mean_squared_prediction_error_brier": 0.08144475324189124,
+              "observed_failure_prevalence": 0.09652509652509653
+            },
+            {
+              "index": 4,
+              "n_snapshots": 288,
+              "n_machines": 78,
+              "evidence_mean": 495.56944444444446,
+              "evidence_min": 484.0,
+              "evidence_max": 507.0,
+              "mean_squared_prediction_error_brier": 0.0857270757837666,
+              "observed_failure_prevalence": 0.10416666666666667
+            },
+            {
+              "index": 5,
+              "n_snapshots": 232,
+              "n_machines": 66,
+              "evidence_mean": 524.7241379310345,
+              "evidence_min": 512.0,
+              "evidence_max": 542.0,
+              "mean_squared_prediction_error_brier": 0.09650195175082625,
+              "observed_failure_prevalence": 0.1206896551724138
+            }
+          ]
+        },
+        "M": {
+          "rho": -0.13813516498920267,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 365,
+              "n_machines": 70,
+              "evidence_mean": 22.610958904109587,
+              "evidence_min": 18.0,
+              "evidence_max": 24.0,
+              "mean_squared_prediction_error_brier": 0.11196235595850362,
+              "observed_failure_prevalence": 0.136986301369863
+            },
+            {
+              "index": 2,
+              "n_snapshots": 292,
+              "n_machines": 90,
+              "evidence_mean": 25.503424657534246,
+              "evidence_min": 25.0,
+              "evidence_max": 26.0,
+              "mean_squared_prediction_error_brier": 0.09794429887969423,
+              "observed_failure_prevalence": 0.11301369863013698
+            },
+            {
+              "index": 3,
+              "n_snapshots": 153,
+              "n_machines": 64,
+              "evidence_mean": 27.0,
+              "evidence_min": 27.0,
+              "evidence_max": 27.0,
+              "mean_squared_prediction_error_brier": 0.08972841312158748,
+              "observed_failure_prevalence": 0.1111111111111111
+            },
+            {
+              "index": 4,
+              "n_snapshots": 236,
+              "n_machines": 75,
+              "evidence_mean": 28.43220338983051,
+              "evidence_min": 28.0,
+              "evidence_max": 29.0,
+              "mean_squared_prediction_error_brier": 0.08556081980043077,
+              "observed_failure_prevalence": 0.11016949152542373
+            },
+            {
+              "index": 5,
+              "n_snapshots": 254,
+              "n_machines": 54,
+              "evidence_mean": 31.405511811023622,
+              "evidence_min": 30.0,
+              "evidence_max": 36.0,
+              "mean_squared_prediction_error_brier": 0.06618760118929758,
+              "observed_failure_prevalence": 0.07874015748031496
+            }
+          ]
+        },
+        "F": {
+          "rho": 0.14615269937303782,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 440,
+              "n_machines": 41,
+              "evidence_mean": 2.859090909090909,
+              "evidence_min": 0.0,
+              "evidence_max": 4.0,
+              "mean_squared_prediction_error_brier": 0.07726881970924057,
+              "observed_failure_prevalence": 0.08181818181818182
+            },
+            {
+              "index": 2,
+              "n_snapshots": 126,
+              "n_machines": 23,
+              "evidence_mean": 5.0,
+              "evidence_min": 5.0,
+              "evidence_max": 5.0,
+              "mean_squared_prediction_error_brier": 0.0950854419725146,
+              "observed_failure_prevalence": 0.1111111111111111
+            },
+            {
+              "index": 3,
+              "n_snapshots": 358,
+              "n_machines": 51,
+              "evidence_mean": 6.511173184357542,
+              "evidence_min": 6.0,
+              "evidence_max": 7.0,
+              "mean_squared_prediction_error_brier": 0.1000476608192088,
+              "observed_failure_prevalence": 0.12849162011173185
+            },
+            {
+              "index": 4,
+              "n_snapshots": 147,
+              "n_machines": 31,
+              "evidence_mean": 8.0,
+              "evidence_min": 8.0,
+              "evidence_max": 8.0,
+              "mean_squared_prediction_error_brier": 0.09515932642774552,
+              "observed_failure_prevalence": 0.12244897959183673
+            },
+            {
+              "index": 5,
+              "n_snapshots": 229,
+              "n_machines": 28,
+              "evidence_mean": 10.860262008733624,
+              "evidence_min": 9.0,
+              "evidence_max": 17.0,
+              "mean_squared_prediction_error_brier": 0.10661098978843943,
+              "observed_failure_prevalence": 0.13973799126637554
+            }
+          ]
+        },
+        "R": {
+          "rho": 0.7282226866083876,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 306,
+              "n_machines": 100,
+              "evidence_mean": 2.5130718954248366,
+              "evidence_min": 1.0,
+              "evidence_max": 4.0,
+              "mean_squared_prediction_error_brier": 1.8652224943018663e-05,
+              "observed_failure_prevalence": 0.0
+            },
+            {
+              "index": 2,
+              "n_snapshots": 226,
+              "n_machines": 100,
+              "evidence_mean": 6.057522123893805,
+              "evidence_min": 5.0,
+              "evidence_max": 7.0,
+              "mean_squared_prediction_error_brier": 1.6804642566332452e-05,
+              "observed_failure_prevalence": 0.0
+            },
+            {
+              "index": 3,
+              "n_snapshots": 305,
+              "n_machines": 100,
+              "evidence_mean": 9.550819672131148,
+              "evidence_min": 8.0,
+              "evidence_max": 11.0,
+              "mean_squared_prediction_error_brier": 0.1600340202887498,
+              "observed_failure_prevalence": 0.18688524590163935
+            },
+            {
+              "index": 4,
+              "n_snapshots": 230,
+              "n_machines": 100,
+              "evidence_mean": 13.039130434782608,
+              "evidence_min": 12.0,
+              "evidence_max": 14.0,
+              "mean_squared_prediction_error_brier": 0.19823819020782502,
+              "observed_failure_prevalence": 0.2826086956521739
+            },
+            {
+              "index": 5,
+              "n_snapshots": 233,
+              "n_machines": 95,
+              "evidence_mean": 21.630901287553648,
+              "evidence_min": 15.0,
+              "evidence_max": 45.0,
+              "mean_squared_prediction_error_brier": 0.11066000521197283,
+              "observed_failure_prevalence": 0.10300429184549356
+            }
+          ]
+        }
+      },
+      "evidence_cv": {
+        "mae_constant_mean_baseline": 0.12946290644930225,
+        "mae_evidence_ridge": 0.11875103542198269,
+        "rmse_constant_mean_baseline": 0.2051305188933108,
+        "rmse_evidence_ridge": 0.1978770938947822,
+        "r2_evidence_ridge": 0.06927790525568034
+      },
+      "incremental": [
+        {
+          "model": "constant_mean_loss",
+          "mae": 0.12946290644930225,
+          "rmse": 0.2051305188933108,
+          "r2": -0.00020618114447423785
+        },
+        {
+          "model": "risk_only",
+          "mae": 0.1071214043181415,
+          "rmse": 0.1906353529845265,
+          "r2": 0.13615492275872343
+        },
+        {
+          "model": "risk_plus_recency",
+          "mae": 0.10727808294072862,
+          "rmse": 0.1909118923673298,
+          "r2": 0.13364688374105527
+        },
+        {
+          "model": "risk_plus_HMF_machine",
+          "mae": 0.1076395740433024,
+          "rmse": 0.19126340750020054,
+          "r2": 0.13045361390799637
+        },
+        {
+          "model": "risk_plus_HMFR_machine",
+          "mae": 0.10774211443607486,
+          "rmse": 0.1914462710524368,
+          "r2": 0.128790103301323
+        }
+      ],
+      "delta_mae_risk_minus_evidence": -0.0006207101179333541
+    },
+    {
+      "id": "180d",
+      "label": "180-day history",
+      "short_label": "180 days",
+      "lookback_days": 180,
+      "snapshots": 1300,
+      "machines": 100,
+      "dates": 13,
+      "positive_cases": 146,
+      "brier": 0.09182796498033208,
+      "evidence": {
+        "H": {
+          "rho": 0.5185664333346937,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 275,
+              "n_machines": 100,
+              "evidence_mean": 162.44727272727272,
+              "evidence_min": 138.0,
+              "evidence_max": 167.0,
+              "mean_squared_prediction_error_brier": 0.04143536905366889,
+              "observed_failure_prevalence": 0.04727272727272727
+            },
+            {
+              "index": 2,
+              "n_snapshots": 313,
+              "n_machines": 100,
+              "evidence_mean": 169.46006389776358,
+              "evidence_min": 168.0,
+              "evidence_max": 171.0,
+              "mean_squared_prediction_error_brier": 0.0031519720945845237,
+              "observed_failure_prevalence": 0.0
+            },
+            {
+              "index": 3,
+              "n_snapshots": 239,
+              "n_machines": 100,
+              "evidence_mean": 172.98744769874477,
+              "evidence_min": 172.0,
+              "evidence_max": 174.0,
+              "mean_squared_prediction_error_brier": 0.07619167767185801,
+              "observed_failure_prevalence": 0.0794979079497908
+            },
+            {
+              "index": 4,
+              "n_snapshots": 237,
+              "n_machines": 100,
+              "evidence_mean": 175.9620253164557,
+              "evidence_min": 175.0,
+              "evidence_max": 177.0,
+              "mean_squared_prediction_error_brier": 0.22656320004899402,
+              "observed_failure_prevalence": 0.29535864978902954
+            },
+            {
+              "index": 5,
+              "n_snapshots": 236,
+              "n_machines": 100,
+              "evidence_mean": 178.97881355932202,
+              "evidence_min": 178.0,
+              "evidence_max": 180.0,
+              "mean_squared_prediction_error_brier": 0.14868547179611064,
+              "observed_failure_prevalence": 0.1864406779661017
+            }
+          ]
+        },
+        "M": {
+          "rho": -0.20378917512494907,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 353,
+              "n_machines": 48,
+              "evidence_mean": 12.223796033994335,
+              "evidence_min": 8.0,
+              "evidence_max": 13.0,
+              "mean_squared_prediction_error_brier": 0.1007728718328238,
+              "observed_failure_prevalence": 0.13031161473087818
+            },
+            {
+              "index": 2,
+              "n_snapshots": 209,
+              "n_machines": 51,
+              "evidence_mean": 14.0,
+              "evidence_min": 14.0,
+              "evidence_max": 14.0,
+              "mean_squared_prediction_error_brier": 0.09672849662620614,
+              "observed_failure_prevalence": 0.11483253588516747
+            },
+            {
+              "index": 3,
+              "n_snapshots": 265,
+              "n_machines": 61,
+              "evidence_mean": 15.0,
+              "evidence_min": 15.0,
+              "evidence_max": 15.0,
+              "mean_squared_prediction_error_brier": 0.09416669185688238,
+              "observed_failure_prevalence": 0.1169811320754717
+            },
+            {
+              "index": 4,
+              "n_snapshots": 365,
+              "n_machines": 57,
+              "evidence_mean": 16.46849315068493,
+              "evidence_min": 16.0,
+              "evidence_max": 17.0,
+              "mean_squared_prediction_error_brier": 0.08833380228734823,
+              "observed_failure_prevalence": 0.10410958904109589
+            },
+            {
+              "index": 5,
+              "n_snapshots": 108,
+              "n_machines": 23,
+              "evidence_mean": 18.15740740740741,
+              "evidence_min": 18.0,
+              "evidence_max": 19.0,
+              "mean_squared_prediction_error_brier": 0.05917836801492455,
+              "observed_failure_prevalence": 0.06481481481481481
+            }
+          ]
+        },
+        "F": {
+          "rho": 0.17797332902660318,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 413,
+              "n_machines": 47,
+              "evidence_mean": 1.297820823244552,
+              "evidence_min": 0.0,
+              "evidence_max": 2.0,
+              "mean_squared_prediction_error_brier": 0.07979189910048559,
+              "observed_failure_prevalence": 0.08958837772397095
+            },
+            {
+              "index": 2,
+              "n_snapshots": 242,
+              "n_machines": 42,
+              "evidence_mean": 3.0,
+              "evidence_min": 3.0,
+              "evidence_max": 3.0,
+              "mean_squared_prediction_error_brier": 0.07098759601469534,
+              "observed_failure_prevalence": 0.08677685950413223
+            },
+            {
+              "index": 3,
+              "n_snapshots": 197,
+              "n_machines": 44,
+              "evidence_mean": 4.0,
+              "evidence_min": 4.0,
+              "evidence_max": 4.0,
+              "mean_squared_prediction_error_brier": 0.10569003250624762,
+              "observed_failure_prevalence": 0.13705583756345177
+            },
+            {
+              "index": 4,
+              "n_snapshots": 238,
+              "n_machines": 40,
+              "evidence_mean": 5.0,
+              "evidence_min": 5.0,
+              "evidence_max": 5.0,
+              "mean_squared_prediction_error_brier": 0.11807579457532531,
+              "observed_failure_prevalence": 0.14285714285714285
+            },
+            {
+              "index": 5,
+              "n_snapshots": 210,
+              "n_machines": 29,
+              "evidence_mean": 7.023809523809524,
+              "evidence_min": 6.0,
+              "evidence_max": 11.0,
+              "mean_squared_prediction_error_brier": 0.09676345903674591,
+              "observed_failure_prevalence": 0.12857142857142856
+            }
+          ]
+        },
+        "R": {
+          "rho": 0.7325177330144543,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 306,
+              "n_machines": 100,
+              "evidence_mean": 2.5130718954248366,
+              "evidence_min": 1.0,
+              "evidence_max": 4.0,
+              "mean_squared_prediction_error_brier": 5.625216175667143e-06,
+              "observed_failure_prevalence": 0.0
+            },
+            {
+              "index": 2,
+              "n_snapshots": 226,
+              "n_machines": 100,
+              "evidence_mean": 6.057522123893805,
+              "evidence_min": 5.0,
+              "evidence_max": 7.0,
+              "mean_squared_prediction_error_brier": 5.307735896011119e-06,
+              "observed_failure_prevalence": 0.0
+            },
+            {
+              "index": 3,
+              "n_snapshots": 305,
+              "n_machines": 100,
+              "evidence_mean": 9.550819672131148,
+              "evidence_min": 8.0,
+              "evidence_max": 11.0,
+              "mean_squared_prediction_error_brier": 0.155810793336828,
+              "observed_failure_prevalence": 0.18688524590163935
+            },
+            {
+              "index": 4,
+              "n_snapshots": 230,
+              "n_machines": 100,
+              "evidence_mean": 13.039130434782608,
+              "evidence_min": 12.0,
+              "evidence_max": 14.0,
+              "mean_squared_prediction_error_brier": 0.2160196380789892,
+              "observed_failure_prevalence": 0.2826086956521739
+            },
+            {
+              "index": 5,
+              "n_snapshots": 233,
+              "n_machines": 95,
+              "evidence_mean": 21.630901287553648,
+              "evidence_min": 15.0,
+              "evidence_max": 45.0,
+              "mean_squared_prediction_error_brier": 0.09513572911617751,
+              "observed_failure_prevalence": 0.10300429184549356
+            }
+          ]
+        }
+      },
+      "evidence_cv": {
+        "mae_constant_mean_baseline": 0.14397609583820087,
+        "mae_evidence_ridge": 0.13587677656810931,
+        "rmse_constant_mean_baseline": 0.23215100574529599,
+        "rmse_evidence_ridge": 0.22425028350004272,
+        "r2_evidence_ridge": 0.06628249368854089
+      },
+      "incremental": [
+        {
+          "model": "constant_mean_loss",
+          "mae": 0.14397609583820087,
+          "rmse": 0.23215100574529599,
+          "r2": -0.0006694449310729045
+        },
+        {
+          "model": "risk_only",
+          "mae": 0.12820301102955645,
+          "rmse": 0.21928598958554715,
+          "r2": 0.10716486978303585
+        },
+        {
+          "model": "risk_plus_recency",
+          "mae": 0.12846177425302086,
+          "rmse": 0.21984667220739307,
+          "r2": 0.10259333176595564
+        },
+        {
+          "model": "risk_plus_HMF_machine",
+          "mae": 0.12920334480234547,
+          "rmse": 0.21896310439316485,
+          "r2": 0.10979222416731538
+        },
+        {
+          "model": "risk_plus_HMFR_machine",
+          "mae": 0.1294345144528674,
+          "rmse": 0.21938600039272155,
+          "r2": 0.10635028491699305
+        }
+      ],
+      "delta_mae_risk_minus_evidence": -0.0012315034233109645
+    },
+    {
+      "id": "90d",
+      "label": "90-day history",
+      "short_label": "90 days",
+      "lookback_days": 90,
+      "snapshots": 1300,
+      "machines": 100,
+      "dates": 13,
+      "positive_cases": 146,
+      "brier": 0.09031471994768174,
+      "evidence": {
+        "H": {
+          "rho": 0.5647970743388713,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 270,
+              "n_machines": 100,
+              "evidence_mean": 72.54074074074074,
+              "evidence_min": 46.0,
+              "evidence_max": 77.0,
+              "mean_squared_prediction_error_brier": 0.04091417622476864,
+              "observed_failure_prevalence": 0.044444444444444446
+            },
+            {
+              "index": 2,
+              "n_snapshots": 316,
+              "n_machines": 100,
+              "evidence_mean": 79.45569620253164,
+              "evidence_min": 78.0,
+              "evidence_max": 81.0,
+              "mean_squared_prediction_error_brier": 0.0073142408627630265,
+              "observed_failure_prevalence": 0.0
+            },
+            {
+              "index": 3,
+              "n_snapshots": 237,
+              "n_machines": 100,
+              "evidence_mean": 83.0253164556962,
+              "evidence_min": 82.0,
+              "evidence_max": 84.0,
+              "mean_squared_prediction_error_brier": 0.08689890267484603,
+              "observed_failure_prevalence": 0.08860759493670886
+            },
+            {
+              "index": 4,
+              "n_snapshots": 244,
+              "n_machines": 100,
+              "evidence_mean": 85.97540983606558,
+              "evidence_min": 85.0,
+              "evidence_max": 87.0,
+              "mean_squared_prediction_error_brier": 0.20723006680241296,
+              "observed_failure_prevalence": 0.29508196721311475
+            },
+            {
+              "index": 5,
+              "n_snapshots": 233,
+              "n_machines": 99,
+              "evidence_mean": 89.01716738197425,
+              "evidence_min": 88.0,
+              "evidence_max": 90.0,
+              "mean_squared_prediction_error_brier": 0.14116666096540054,
+              "observed_failure_prevalence": 0.1759656652360515
+            }
+          ]
+        },
+        "M": {
+          "rho": -0.134605936762471,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 404,
+              "n_machines": 58,
+              "evidence_mean": 5.603960396039604,
+              "evidence_min": 3.0,
+              "evidence_max": 6.0,
+              "mean_squared_prediction_error_brier": 0.09601743322888402,
+              "observed_failure_prevalence": 0.11633663366336634
+            },
+            {
+              "index": 2,
+              "n_snapshots": 314,
+              "n_machines": 76,
+              "evidence_mean": 7.0,
+              "evidence_min": 7.0,
+              "evidence_max": 7.0,
+              "mean_squared_prediction_error_brier": 0.09340278513576548,
+              "observed_failure_prevalence": 0.1178343949044586
+            },
+            {
+              "index": 3,
+              "n_snapshots": 313,
+              "n_machines": 69,
+              "evidence_mean": 8.0,
+              "evidence_min": 8.0,
+              "evidence_max": 8.0,
+              "mean_squared_prediction_error_brier": 0.08900444615625287,
+              "observed_failure_prevalence": 0.12140575079872204
+            },
+            {
+              "index": 4,
+              "n_snapshots": 188,
+              "n_machines": 49,
+              "evidence_mean": 9.0,
+              "evidence_min": 9.0,
+              "evidence_max": 9.0,
+              "mean_squared_prediction_error_brier": 0.08309846165009274,
+              "observed_failure_prevalence": 0.09574468085106383
+            },
+            {
+              "index": 5,
+              "n_snapshots": 81,
+              "n_machines": 20,
+              "evidence_mean": 10.197530864197532,
+              "evidence_min": 10.0,
+              "evidence_max": 11.0,
+              "mean_squared_prediction_error_brier": 0.07171254244150803,
+              "observed_failure_prevalence": 0.07407407407407407
+            }
+          ]
+        },
+        "F": {
+          "rho": 0.032124527740106865,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 544,
+              "n_machines": 68,
+              "evidence_mean": 0.6470588235294118,
+              "evidence_min": 0.0,
+              "evidence_max": 1.0,
+              "mean_squared_prediction_error_brier": 0.08791919333684384,
+              "observed_failure_prevalence": 0.10294117647058823
+            },
+            {
+              "index": 2,
+              "n_snapshots": 414,
+              "n_machines": 72,
+              "evidence_mean": 2.0,
+              "evidence_min": 2.0,
+              "evidence_max": 2.0,
+              "mean_squared_prediction_error_brier": 0.07773141206965785,
+              "observed_failure_prevalence": 0.10386473429951691
+            },
+            {
+              "index": 3,
+              "n_snapshots": 230,
+              "n_machines": 45,
+              "evidence_mean": 3.0,
+              "evidence_min": 3.0,
+              "evidence_max": 3.0,
+              "mean_squared_prediction_error_brier": 0.1143294182498899,
+              "observed_failure_prevalence": 0.14347826086956522
+            },
+            {
+              "index": 4,
+              "n_snapshots": 112,
+              "n_machines": 22,
+              "evidence_mean": 4.214285714285714,
+              "evidence_min": 4.0,
+              "evidence_max": 6.0,
+              "mean_squared_prediction_error_brier": 0.0991475353788408,
+              "observed_failure_prevalence": 0.125
+            }
+          ]
+        },
+        "R": {
+          "rho": 0.736108327479413,
+          "observations": 1300,
+          "groups": [
+            {
+              "index": 1,
+              "n_snapshots": 306,
+              "n_machines": 100,
+              "evidence_mean": 2.5130718954248366,
+              "evidence_min": 1.0,
+              "evidence_max": 4.0,
+              "mean_squared_prediction_error_brier": 1.5301058396984542e-05,
+              "observed_failure_prevalence": 0.0
+            },
+            {
+              "index": 2,
+              "n_snapshots": 226,
+              "n_machines": 100,
+              "evidence_mean": 6.057522123893805,
+              "evidence_min": 5.0,
+              "evidence_max": 7.0,
+              "mean_squared_prediction_error_brier": 1.4937036417602398e-05,
+              "observed_failure_prevalence": 0.0
+            },
+            {
+              "index": 3,
+              "n_snapshots": 305,
+              "n_machines": 100,
+              "evidence_mean": 9.550819672131148,
+              "evidence_min": 8.0,
+              "evidence_max": 11.0,
+              "mean_squared_prediction_error_brier": 0.15506223143500167,
+              "observed_failure_prevalence": 0.18688524590163935
+            },
+            {
+              "index": 4,
+              "n_snapshots": 230,
+              "n_machines": 100,
+              "evidence_mean": 13.039130434782608,
+              "evidence_min": 12.0,
+              "evidence_max": 14.0,
+              "mean_squared_prediction_error_brier": 0.19920065615180954,
+              "observed_failure_prevalence": 0.2826086956521739
+            },
+            {
+              "index": 5,
+              "n_snapshots": 233,
+              "n_machines": 95,
+              "evidence_mean": 21.630901287553648,
+              "evidence_min": 15.0,
+              "evidence_max": 45.0,
+              "mean_squared_prediction_error_brier": 0.10425298942186563,
+              "observed_failure_prevalence": 0.10300429184549356
+            }
+          ]
+        }
+      },
+      "evidence_cv": {
+        "mae_constant_mean_baseline": 0.11800996521755897,
+        "mae_evidence_ridge": 0.10845028134294817,
+        "rmse_constant_mean_baseline": 0.18781661398660338,
+        "rmse_evidence_ridge": 0.17871480741038956,
+        "r2_evidence_ridge": 0.09406270114594617
+      },
+      "incremental": [
+        {
+          "model": "constant_mean_loss",
+          "mae": 0.11800996521755897,
+          "rmse": 0.18781661398660338,
+          "r2": -0.0005644747058102251
+        },
+        {
+          "model": "risk_only",
+          "mae": 0.09735739201592325,
+          "rmse": 0.17097760829444855,
+          "r2": 0.17080716430074894
+        },
+        {
+          "model": "risk_plus_recency",
+          "mae": 0.09748116474282595,
+          "rmse": 0.17118754852252352,
+          "r2": 0.1687696131833385
+        },
+        {
+          "model": "risk_plus_HMF_machine",
+          "mae": 0.09877618383827026,
+          "rmse": 0.17122865169314916,
+          "r2": 0.16837039832840173
+        },
+        {
+          "model": "risk_plus_HMFR_machine",
+          "mae": 0.0988182702082782,
+          "rmse": 0.171352886106497,
+          "r2": 0.167163188024129
+        }
+      ],
+      "delta_mae_risk_minus_evidence": -0.0014608781923549502
+    }
+  ],
+  "methodology": {
+    "dataset": "Microsoft Azure PdM synthetic benchmark (NOT apparel factory data)",
+    "prediction_horizon_days": 7,
+    "n_paired_machine_snapshots_per_condition": 1300,
+    "n_observation_rows_total": 3900,
+    "n_machines_per_condition": 100,
+    "history_conditions": [
+      "Full observed history",
+      "180-day history",
+      "90-day history"
+    ],
+    "H_definition": "Elapsed time since earliest observed maintenance event in retained window; NOT verified data collection start",
+    "M_definition": "Prior recorded maintenance events in retained window",
+    "F_definition": "Prior recorded failures in retained window",
+    "C_definition": "Source fields complete (100% constant). Not used for fitted relationship; simulated masking needed later",
+    "R_definition": "Days since most recent recorded maintenance event, within retained window; missing if no prior event",
+    "loss_definition": "(observed 7-day failure label - original uncalibrated model probability)^2",
+    "calibration_note": "Losses come from the ORIGINAL independently refitted N2 pilot models, not the later sigmoid-calibration experiment.",
+    "relationship_estimator": "Ridge regression on H/M/F/R plus machine model; machine-grouped 5-fold out-of-fold predictions",
+    "correlation_interpretation": "Spearman rho is descriptive only; repeated snapshots are correlated; no p-values reported",
+    "scope_limitations": [
+      "Repeated machine snapshots and overlapping outcomes; no row-wise independence",
+      "Underlying original failure model trained on earlier periods of these same machines",
+      "Test data inspected during earlier model development; not untouched final evaluation",
+      "Brier loss can vary with failure prevalence and intrinsic case difficulty, not only sufficiency",
+      "Machine-group CV assesses second-stage mapping only; not generalisation to wholly unseen assets",
+      "Window models were refitted; differences do not isolate the causal effect of data removal",
+      "No real-world naturally missing maintenance fields; C is unidentifiable"
+    ]
+  },
+  "incremental_methodology": {
+    "research_question": "Does H/M/F/R (+ machine model) add out-of-fold loss-prediction information beyond original risk p?",
+    "dataset": "Synthetic Microsoft Azure PdM; not real apparel-machine data",
+    "loss": "Observed squared error from the ORIGINAL, uncalibrated 7-day N2 model",
+    "comparison": [
+      "constant_mean_loss",
+      "risk_only",
+      "risk_plus_recency",
+      "risk_plus_HMF_machine",
+      "risk_plus_HMFR_machine"
+    ],
+    "risk_only_features": [
+      "risk_p",
+      "risk_p_squared"
+    ],
+    "risk_plus_evidence_features": [
+      "risk_p",
+      "risk_p_squared",
+      "H_observed_span_days",
+      "M_maintenance_count",
+      "F_prior_failure_count",
+      "R_days_since_maintenance",
+      "machine_model"
+    ],
+    "C_field_completeness": "Excluded: fixed at 100% in this published dataset",
+    "recency_warning": "R measures days since a maintenance event; this is operational machine state, not verified log-data freshness",
+    "validity_warning": "Original risk model previously trained on earlier records for these machines. This is second-stage grouped CV on an already examined original test period; not independent validation of new machines or apparel factories.",
+    "dependence_warning": "Weekly observations and failure outcomes for a machine are correlated. GroupKFold separates machines only in the second-stage relationship analysis.",
+    "interpretation": "A positive delta_mae_risk_minus_full_evidence means lower OOF MAE for the risk+evidence model, not a demonstrated causal sufficiency effect or a validated machine reliability percentage.",
+    "model_selection_warning": "Do not select one method solely from these reused test-period results and report its score as fresh external validation."
+  },
+  "provenance": [
+    {
+      "path": "research/component3/outputs_corrected/n2_initial_window_comparison.csv",
+      "sha256": "84cc46030d9a4f6c11acc40e717d57aece793e4073a823113ae1c859ca68fcc1",
+      "bytes": 560,
+      "rows": 3
+    },
+    {
+      "path": "research/component3/outputs_corrected/n2_paired_test_prediction_losses.csv",
+      "sha256": "32dc119c3d82726331cd0072b838b9107e7e67ac2f447c7f1539467c46a91f10",
+      "bytes": 332626,
+      "rows": 3900
+    },
+    {
+      "path": "research/component3/outputs_n2_continuous/n2_prediction_evidence_and_losses.csv",
+      "sha256": "02c7ecfc98cdfbc1799ce9a72b44901cf45a91aee747f30fe98d875ab9417834",
+      "bytes": 514760,
+      "rows": 3900
+    },
+    {
+      "path": "research/component3/outputs_n2_continuous/n2_descriptive_spearman_correlations.csv",
+      "sha256": "b660daa0b6a0929af6bf7b0e88dcd65fafde7f002bc79fc01b15806665842ab8",
+      "bytes": 2031,
+      "rows": 15
+    },
+    {
+      "path": "research/component3/outputs_n2_continuous/n2_evidence_loss_quantile_summary.csv",
+      "sha256": "2545db6c35d9a55c243d0c775e73efbcffdcc9c05b90e23568194c43fa68b803",
+      "bytes": 7062,
+      "rows": 59
+    },
+    {
+      "path": "research/component3/outputs_n2_continuous/n2_grouped_cv_relationship_metrics.csv",
+      "sha256": "ad509608f1a05a7de0bb09a1dfd9a7fcb44f24bd69af89afd4e8e13d5c114a11",
+      "bytes": 693,
+      "rows": 3
+    },
+    {
+      "path": "research/component3/outputs_n2_continuous/n2_grouped_cv_loss_predictions.csv",
+      "sha256": "e9ac135f8009b3c5a8ced5e68b7a1581e93c3b7a504dea03ce64d17cd3b0da87",
+      "bytes": 403058,
+      "rows": 3900
+    },
+    {
+      "path": "research/component3/outputs_n2_continuous/n2_methodology_and_limitations.json",
+      "sha256": "ec053ff60d00a5d923d624a8132fa5d0855835d129f0e2862f89498ec663f468",
+      "bytes": 2060
+    },
+    {
+      "path": "research/component3/outputs_n2_incremental/n2_risk_vs_evidence_cv_metrics.csv",
+      "sha256": "6b3a85f0d4e4797c9b32c3cf48b238f2e69a0420e167ae1811c77612c9edbb9b",
+      "bytes": 1716,
+      "rows": 15
+    },
+    {
+      "path": "research/component3/outputs_n2_incremental/n2_risk_vs_evidence_cv_predictions.csv",
+      "sha256": "7f75ce31bc70839cf9d8799c576996e39aed4b7af57ec4c23185530e69d2e983",
+      "bytes": 823584,
+      "rows": 3900
+    },
+    {
+      "path": "research/component3/outputs_n2_incremental/n2_risk_vs_evidence_incremental_mae.csv",
+      "sha256": "7aa846432388bceb17e874830977602a97fb84983769e7f6256d712a5fec323f",
+      "bytes": 436,
+      "rows": 3
+    },
+    {
+      "path": "research/component3/outputs_n2_incremental/n2_risk_vs_evidence_methodology.json",
+      "sha256": "63ce3dc2045bdc925ae20a4cd140e7b2547ffd0c43716960b8cc4b1ded0df542",
+      "bytes": 1741
+    }
+  ]
+}

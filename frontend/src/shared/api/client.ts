@@ -1,4 +1,13 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/+$/, '');
+
+function apiUrl(path: string): string {
+  // Component 1 paths already contain /api/v1, and artifact paths are
+  // relative to the server origin. Support the shared API-root setting
+  // while retaining Component 1's legacy origin-only configuration.
+  const prefix = '/api/v1';
+  const origin = BASE_URL.endsWith(prefix) ? BASE_URL.slice(0, -prefix.length) : BASE_URL;
+  return `${origin}${path}`;
+}
 
 export class ApiError extends Error {
   readonly status: number;
@@ -16,7 +25,7 @@ export async function apiFetch<T>(
   path: string,
   init?: RequestInit,
 ): Promise<T> {
-  const url = `${BASE_URL}${path}`;
+  const url = apiUrl(path);
   let res: Response;
   try {
     res = await fetch(url, init);
@@ -39,5 +48,5 @@ export async function apiFetch<T>(
 }
 
 export function artifactUrl(relativePath: string): string {
-  return `${BASE_URL}${relativePath}`;
+  return apiUrl(relativePath);
 }

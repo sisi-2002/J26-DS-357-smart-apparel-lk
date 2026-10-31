@@ -1,0 +1,22 @@
+# Local datasets
+raw/
+datasets/
+
+# Generated experiment results
+outputs*/
+reports/generated/
+
+# Python files
+__pycache__/
+*.pyc
+
+# Environments and secrets
+.venv/
+.env
+
+# Generated models
+*.joblib
+*.pkl
+
+# Notebook checkpoints
+.ipynb_checkpoints/

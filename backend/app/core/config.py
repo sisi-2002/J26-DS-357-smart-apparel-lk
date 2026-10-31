@@ -1,28 +1,64 @@
-"""Application configuration from environment variables."""
-from typing import Optional
+"""Component configuration with each component's existing environment contract."""
+from dataclasses import dataclass
+import os
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings(BaseSettings):
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+
+
+class ApplicationSettings(BaseSettings):
+    """Component 1 and database settings, including its existing .env support."""
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
-    DATABASE_URL: Optional[str] = None
-
+    DATABASE_URL: str | None = None
     C1_MODEL_WEIGHTS: str = ""
     C1_MODEL_DEVICE: str = "cpu"
     C1_STORAGE_DIR: str = "./storage"
     C1_AUTH_DISABLED: bool = True
-
-    # Checkpoint identity verification (opt-in — see model_identity.py).
-    # If set, C1_MODEL_WEIGHTS is hashed and compared before loading;
-    # a mismatch blocks loading rather than silently using the file anyway.
-    C1_MODEL_FREEZE_MANIFEST: Optional[str] = None
-    C1_MODEL_EXPECTED_SHA256: Optional[str] = None
+    # If both identity checks are configured, their hashes must agree.
+    C1_MODEL_FREEZE_MANIFEST: str | None = None
+    C1_MODEL_EXPECTED_SHA256: str | None = None
 
 
-settings = Settings()
+@dataclass(frozen=True)
+class Settings:
+    """Component 3's immutable, injectable settings; shell variables only.
+
+    Keep this dataclass API for research callers and dataclasses.replace().
+    Relative C3 paths always resolve from the repository root.
+    """
+
+    c3_model_path: Path | None = None
+    c3_data_dir: Path | None = None
+    c3_experimental_multihorizon: bool = False
+    c3_experimental_model_path: Path | None = None
+
+    @classmethod
+    def from_env(cls) -> "Settings":
+        def configured_path(name: str) -> Path | None:
+            value = os.environ.get(name, "").strip()
+            if not value:
+                return None
+            path = Path(value).expanduser()
+            return (path if path.is_absolute() else REPOSITORY_ROOT / path).resolve()
+
+        return cls(
+            c3_model_path=configured_path("C3_MODEL_PATH"),
+            c3_data_dir=configured_path("C3_DATA_DIR"),
+            c3_experimental_multihorizon=os.environ.get(
+                "C3_EXPERIMENTAL_MULTIHORIZON", ""
+            ).strip().lower() == "true",
+            c3_experimental_model_path=configured_path("C3_EXPERIMENTAL_MODEL_PATH"),
+        )
+
+
+# Keep the singleton used by Component 1 endpoints, storage, and DB sessions.
+settings = ApplicationSettings()

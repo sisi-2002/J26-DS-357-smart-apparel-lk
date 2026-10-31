@@ -1,0 +1,45 @@
+{
+  "seed": 42,
+  "intervals": [
+    "(0,7]",
+    "(7,14]",
+    "(14,30]"
+  ],
+  "lr": "fixed C=1, original baseline",
+  "hgb_grid": [
+    {
+      "max_leaf_nodes": 7,
+      "max_depth": 3,
+      "min_samples_leaf": 40,
+      "l2_regularization": 3.0,
+      "learning_rate": 0.05,
+      "max_iter": 100
+    },
+    {
+      "max_leaf_nodes": 15,
+      "max_depth": 4,
+      "min_samples_leaf": 40,
+      "l2_regularization": 5.0,
+      "learning_rate": 0.05,
+      "max_iter": 150
+    },
+    {
+      "max_leaf_nodes": 7,
+      "max_depth": 3,
+      "min_samples_leaf": 60,
+      "l2_regularization": 10.0,
+      "learning_rate": 0.03,
+      "max_iter": 150
+    }
+  ],
+  "selection": "TRAIN-only 3 expanding date folds, 30-day purge; mean RAW 3-horizon Brier",
+  "calibration": "separate frozen sigmoid per interval; later eligible calibration risk sets only",
+  "projection": "per-case score-only Euclidean projections; no outcome-fitted mapping",
+  "cohort": [
+    1800,
+    500,
+    1300
+  ],
+  "followup_end_exclusive": "2016-01-01",
+  "limitation": "Repeatedly inspected synthetic Azure benchmark test period; exploratory, not factory validation"
+}

@@ -1,0 +1,159 @@
+/* Component 3 presentation only. Shared branding and request logic stay separate. */
+.machine-risk-explorer .prototype-note { position: sticky; top: 5px; z-index: 5; padding: 6px 0; margin-bottom: 18px; background: var(--color-background); color: var(--color-text-muted); font-size: 11px; line-height: 1.7; }
+.machine-risk-explorer .ranking-table-scroll { max-width: 100%; overflow-x: auto; }
+.machine-risk-explorer .ranking-table-scroll:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }
+.machine-risk-explorer .machine-name { display: block; line-height: 1.5; }
+.machine-risk-explorer .machine-line { white-space: nowrap; font-size: 11px; }
+.machine-risk-explorer .machine-identity { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 10px; }
+.machine-risk-explorer .page-heading { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-bottom: 22px; }
+.machine-risk-explorer .eyebrow { display: block; color: var(--color-text-muted); font-size: 10px; font-weight: 650; letter-spacing: .12em; margin-bottom: 10px; }
+.machine-risk-explorer h1 { font-size: clamp(25px, 2.3vw, 34px); line-height: 1.25; font-weight: 550; letter-spacing: -.035em; color: var(--color-heading); }
+.machine-risk-explorer .page-heading p { color: var(--color-text-muted); font-size: 13px; line-height: 1.7; margin-top: 8px; }
+.machine-risk-explorer .period-stamp { flex-shrink: 0; padding-left: 22px; border-left: 1px solid var(--color-border); text-align: right; }
+.machine-risk-explorer .period-stamp strong { display: block; font-size: 25px; font-weight: 400; color: var(--color-text); }
+.machine-risk-explorer .period-stamp span { font-size: 8px; color: var(--color-text-muted); letter-spacing: .09em; }
+.machine-risk-explorer .small-label { display: block; color: var(--color-text-muted); font-size: 9px; font-weight: 650; letter-spacing: .12em; }
+.machine-risk-explorer .prediction-controls { padding: 20px 22px 16px; margin-bottom: 22px; }
+.machine-risk-explorer .controls-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.machine-risk-explorer .controls-heading h2 { font-size: 14px; font-weight: 600; color: var(--color-heading); }
+.machine-risk-explorer .fixed-horizon { display: inline-flex; align-items: center; gap: 9px; font-size: 10px; color: var(--color-text-muted); white-space: nowrap; }
+.machine-risk-explorer .fixed-horizon strong { color: var(--color-link); font-size: 11px; background: var(--color-sage-mist); padding: 5px 8px; border-radius: 4px; }
+.machine-risk-explorer .controls-form { display: grid; grid-template-columns: minmax(210px, 1.2fr) minmax(150px, .85fr) minmax(175px, 1fr) minmax(205px, 1.12fr); gap: 14px; align-items: start; }
+.machine-risk-explorer .field label { display: block; color: var(--color-text); font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+.machine-risk-explorer .field select { width: 100%; background: var(--color-background); color: var(--color-text); border: 1px solid var(--color-control-border); border-radius: 5px; padding: 0 11px; font-size: 12px; }
+.machine-risk-explorer .field-hint { color: var(--color-text-muted); font-size: 10px; margin-top: 7px; line-height: 1.6; }
+.machine-risk-explorer .control-action { padding-top: 23px; }
+.machine-risk-explorer .predict-button, .machine-risk-explorer .compare-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 8px 10px; font-size: 12px; font-weight: 600; border-radius: 5px; line-height: 1.5; }
+.machine-risk-explorer .predict-button { color: var(--color-surface); background: var(--color-primary); border: 1px solid var(--color-primary); }
+.machine-risk-explorer .predict-button:hover:not(:disabled) { background: var(--color-primary-hover); }
+.machine-risk-explorer .compare-button { color: var(--color-link); background: var(--color-sage-mist); border: 1px solid var(--color-control-border); }
+.machine-risk-explorer .compare-button:hover:not(:disabled) { background: var(--color-sage-mist); border-color: var(--color-primary); }
+.machine-risk-explorer button:disabled { cursor: wait; opacity: .65; }
+.machine-risk-explorer .controls-help { font-size: 11px; color: var(--color-text-muted); line-height: 1.7; margin-top: 11px; }
+.machine-risk-explorer .explorer-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 22px; align-items: start; }
+.machine-risk-explorer .ranking-panel, .machine-risk-explorer .selected-machine-panel { padding: 22px; min-width: 0; }
+.machine-risk-explorer .dashboard-panel-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.machine-risk-explorer .dashboard-panel-heading h2 { color: var(--color-heading); font-size: 18px; font-weight: 600; letter-spacing: -.02em; margin-top: 6px; line-height: 1.4; }
+.machine-risk-explorer .ranking-horizon { display: block; font-size: 12px; letter-spacing: 0; font-weight: 500; }
+.machine-risk-explorer #selected-prediction-heading { scroll-margin-top: 120px; }
+.machine-risk-explorer #selected-prediction-heading:focus-visible { outline: 3px solid var(--color-focus); outline-offset: 6px; border-radius: 3px; }
+.machine-risk-explorer .count-tag { font-size: 10px; color: var(--color-text-muted); background: var(--color-sage-mist); padding: 5px 8px; border-radius: 4px; white-space: nowrap; }
+.machine-risk-explorer .ranking-description { color: var(--color-text-muted); font-size: 11px; line-height: 1.75; margin-top: 12px; }
+.machine-risk-explorer .ranking-snapshot { color: var(--color-link); font-size: 11px; font-weight: 600; margin: 10px 0 14px; }
+.machine-risk-explorer .ranking-table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.machine-risk-explorer .ranking-table th { text-align: left; font-size: 10px; color: var(--color-text-muted); font-weight: 600; padding: 9px 7px; border-bottom: 1px solid var(--color-border); line-height: 1.6; }
+.machine-risk-explorer .ranking-table td { padding: 4px 7px; border-bottom: 1px solid var(--color-border); color: var(--color-text); height: 46px; }
+.machine-risk-explorer .ranking-table td:first-child { color: var(--color-text-muted); }
+.machine-risk-explorer .ranking-table td:nth-child(2) { font-weight: 600; }
+.machine-risk-explorer .ranking-table th:nth-child(4), .machine-risk-explorer .ranking-table td:nth-child(4) { text-align: right; }
+.machine-risk-explorer .ranking-table th:last-child, .machine-risk-explorer .ranking-table td:last-child { text-align: right; }
+.machine-risk-explorer .ranking-table tr[data-selected="true"] td { background: var(--color-selected); color: var(--color-heading); }
+.machine-risk-explorer .ranking-table tr[data-selected="true"] td:first-child { box-shadow: inset 3px 0 var(--color-primary); }
+.machine-risk-explorer .ranking-table button { min-width: 45px; min-height: 38px; padding: 4px 7px; font-size: 11px; font-weight: 600; background: var(--color-background); color: var(--color-link); border: 1px solid var(--color-control-border); border-radius: 4px; }
+.machine-risk-explorer .ranking-table button:hover { background: var(--color-sage-mist); }
+.machine-risk-explorer .ranking-caption { margin-top: 13px; color: var(--color-text-muted); font-size: 10px; line-height: 1.75; }
+.machine-risk-explorer .dashboard-empty { padding: 23px 0 7px; }
+.machine-risk-explorer .dashboard-empty h3 { font-size: 15px; font-weight: 550; letter-spacing: -.015em; color: var(--color-heading); margin: 0 0 9px; }
+.machine-risk-explorer .dashboard-empty p { max-width: 440px; font-size: 12px; line-height: 1.85; color: var(--color-text-muted); }
+.machine-risk-explorer .dashboard-empty p strong { font-weight: 600; }
+.machine-risk-explorer .dashboard-empty .empty-footnote { font-size: 11px; margin-top: 10px; color: var(--color-text-muted); }
+.machine-risk-explorer .prediction-empty { padding-top: 24px; padding-bottom: 12px; }
+.machine-risk-explorer .prediction-loading { display: flex; gap: 13px; align-items: center; padding: 26px 0 12px; color: var(--color-link); }
+.machine-risk-explorer .prediction-loading h3 { font-size: 14px; font-weight: 600; margin: 0 0 6px; }
+.machine-risk-explorer .prediction-loading p, .machine-risk-explorer .ranking-status { color: var(--color-text-muted); font-size: 12px; line-height: 1.7; }
+.machine-risk-explorer .error-message { margin-top: 16px; margin-bottom: 0; color: var(--color-warning-text); background: var(--color-warning-bg); border-color: var(--color-warm-amber); }
+.machine-risk-explorer .prediction-result { margin-top: 20px; }
+.machine-risk-explorer .risk-card { background: var(--color-primary); color: var(--color-surface); border-radius: 7px; padding: 20px 22px 16px; }
+.machine-risk-explorer .risk-top { display: flex; justify-content: space-between; gap: 14px; align-items: center; }
+.machine-risk-explorer .risk-top strong { font-size: 14px; font-weight: 600; }
+.machine-risk-explorer .risk-top > span { font-size: 10px; color: var(--color-surface); }
+.machine-risk-explorer .probability-summary { display: flex; gap: 28px; justify-content: space-between; align-items: center; padding-top: 20px; }
+.machine-risk-explorer .risk-card h3 { font-size: 11px; font-weight: 400; color: var(--color-surface); margin: 0; }
+.machine-risk-explorer .probability { font-size: clamp(44px, 4vw, 58px); font-weight: 350; line-height: 1.15; letter-spacing: -.05em; margin-top: 5px; font-variant-numeric: tabular-nums; color: var(--color-surface); white-space: nowrap; }
+.machine-risk-explorer .probability > span { font-size: 26px; color: var(--color-surface); margin-left: 5px; }
+.machine-risk-explorer .risk-explanation { color: var(--color-surface); font-size: 11px; line-height: 1.8; max-width: 220px; }
+.machine-risk-explorer .probability-caveat { font-size: 10px; color: var(--color-surface); margin-top: 12px; border-top: 1px solid var(--color-border); padding-top: 11px; }
+.machine-risk-explorer .evidence-panel { border: 0; box-shadow: none; padding: 0; background: transparent; margin-top: 22px; }
+.machine-risk-explorer .evidence-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.machine-risk-explorer .evidence-heading h3 { font-size: 14px; font-weight: 600; color: var(--color-info); margin: 0; }
+.machine-risk-explorer .evidence-heading > span { font-family: monospace; font-size: 9px; color: var(--color-text-muted); white-space: nowrap; }
+.machine-risk-explorer .panel-description { color: var(--color-text-muted); font-size: 11px; line-height: 1.75; margin: 8px 0 13px; }
+.machine-risk-explorer .evidence-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.machine-risk-explorer .metric-card { grid-column: span 2; border: 1px solid var(--color-info-border); background: var(--color-info-bg); border-radius: 6px; padding: 13px 12px; min-width: 0; }
+.machine-risk-explorer .metric-card:nth-last-child(-n+2) { grid-column: span 3; }
+.machine-risk-explorer .metric-card dt { font-size: 11px; font-weight: 600; color: var(--color-info); line-height: 1.6; }
+.machine-risk-explorer .evidence-symbol { display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 6px; background: var(--color-sage-mist); border-radius: 4px; font-family: monospace; font-size: 10px; color: var(--color-info); vertical-align: middle; }
+.machine-risk-explorer .metric-card dd { margin: 9px 0 0; color: var(--color-info); font-size: 19px; font-weight: 550; line-height: 1.5; letter-spacing: -.02em; }
+.machine-risk-explorer .metric-card .metric-explanation { font-size: 11px; font-weight: 400; line-height: 1.8; color: var(--color-text-muted); letter-spacing: 0; margin-top: 6px; }
+.machine-risk-explorer .research-details { margin-top: 22px; }
+.machine-risk-explorer .research-details > summary { padding: 17px 21px; color: var(--color-info); font-size: 12px; font-weight: 600; cursor: pointer; }
+.machine-risk-explorer .research-details > summary > span { font-size: 10px; font-weight: 400; color: var(--color-text-muted); margin-left: 15px; }
+.machine-risk-explorer .research-details-body { padding: 0 22px 22px; color: var(--color-text-muted); font-size: 11px; line-height: 1.8; }
+.machine-risk-explorer .research-details-body section + section { border-top: 1px solid var(--color-border); margin-top: 22px; padding-top: 18px; }
+.machine-risk-explorer .research-details-body h3 { font-size: 13px; color: var(--color-info); margin: 0 0 9px; font-weight: 600; }
+.machine-risk-explorer .research-details-body p + p { margin-top: 10px; }
+.machine-risk-explorer .provenance { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 6px 16px; margin-top: 14px; }
+.machine-risk-explorer .provenance dt { color: var(--color-text-muted); }
+.machine-risk-explorer .provenance dd { margin: 0; overflow-wrap: anywhere; }
+/* Coral denotes ordinal position only. All probabilities use the same bar color. */
+.machine-risk-explorer .ranking-key { margin: 0 0 8px; color: var(--color-text-muted); font-size: 11px; line-height: 1.7; }
+.machine-risk-explorer .rank-position { display: inline-block; min-width: 18px; padding-left: 5px; border-left: 2px solid transparent; }
+.machine-risk-explorer .rank-position[data-leading="true"] { color: var(--color-rank-accent); border-left-color: var(--color-rank-accent); font-weight: 650; }
+.machine-risk-explorer .selection-label { display: block; font-size: 9px; line-height: 1.5; font-weight: 600; color: var(--color-link); }
+.machine-risk-explorer .probability-scale { display: block; font-size: 9px; font-weight: 400; white-space: nowrap; }
+.machine-risk-explorer .ranking-probability { display: block; white-space: nowrap; }
+.machine-risk-explorer .probability-track { display: block; height: 4px; width: 100%; min-width: 70px; background: var(--color-track); margin-top: 5px; border-radius: 2px; overflow: hidden; }
+.machine-risk-explorer .probability-fill { display: block; height: 100%; background: var(--color-chart-muted); }
+.machine-risk-explorer .ranking-table tr[data-selected="true"] .probability-fill { background: var(--color-primary); }
+.machine-risk-explorer :is(button, select, a, summary):focus-visible { outline: 3px solid var(--color-focus); outline-offset: 4px; }
+@media (max-width: 1350px) {
+  .machine-risk-explorer .period-stamp { display: none; }
+  .machine-risk-explorer .controls-form { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+  .machine-risk-explorer .control-action { padding-top: 0; }
+  .machine-risk-explorer .controls-heading { margin-bottom: 16px; }
+}
+@media (max-width: 1199px) {
+  .machine-risk-explorer .explorer-grid { grid-template-columns: minmax(0, 1fr); }
+  .machine-risk-explorer .ranking-table td { height: 45px; }
+  .machine-risk-explorer .risk-explanation { max-width: 300px; }
+}
+@media (max-width: 650px) {
+  .machine-risk-explorer .page-heading { margin-bottom: 18px; }
+  .machine-risk-explorer .eyebrow { font-size: 8px; letter-spacing: .1em; }
+  .machine-risk-explorer h1 { font-size: 27px; }
+  .machine-risk-explorer .page-heading p { font-size: 12px; }
+  .machine-risk-explorer .prediction-controls { padding: 17px; margin-bottom: 18px; }
+  .machine-risk-explorer .controls-heading { align-items: center; gap: 10px; }
+  .machine-risk-explorer .controls-heading h2 { font-size: 12px; }
+  .machine-risk-explorer .fixed-horizon { gap: 5px; font-size: 9px; }
+  .machine-risk-explorer .controls-form { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .machine-risk-explorer .field-hint { font-size: 10px; }
+  .machine-risk-explorer .controls-help { margin-top: 12px; font-size: 10px; }
+  .machine-risk-explorer .explorer-grid { gap: 18px; }
+  .machine-risk-explorer .ranking-panel, .machine-risk-explorer .selected-machine-panel { padding: 18px 16px; }
+  .machine-risk-explorer .dashboard-panel-heading h2 { font-size: 17px; }
+  .machine-risk-explorer .ranking-table th, .machine-risk-explorer .ranking-table td { padding-left: 5px; padding-right: 5px; }
+  .machine-risk-explorer .ranking-table td { height: 48px; }
+  .machine-risk-explorer .ranking-table button { min-height: 40px; min-width: 44px; }
+  .machine-risk-explorer .dashboard-empty { padding-top: 18px; }
+  .machine-risk-explorer .dashboard-empty p { font-size: 11px; }
+  .machine-risk-explorer .risk-card { padding: 17px; }
+  .machine-risk-explorer .risk-top { gap: 8px; flex-wrap: wrap; }
+  .machine-risk-explorer .risk-top > span { font-size: 9px; }
+  .machine-risk-explorer .probability-summary { align-items: start; flex-direction: column; gap: 10px; padding-top: 17px; }
+  .machine-risk-explorer .probability { font-size: 50px; }
+  .machine-risk-explorer .risk-explanation { max-width: none; font-size: 11px; }
+  .machine-risk-explorer .evidence-heading { gap: 8px; }
+  .machine-risk-explorer .evidence-heading h3 { font-size: 13px; }
+  .machine-risk-explorer .evidence-heading > span { font-size: 8px; }
+  .machine-risk-explorer .metric-card, .machine-risk-explorer .metric-card:nth-last-child(-n+2) { grid-column: span 3; padding: 12px 10px; }
+  .machine-risk-explorer .metric-card:last-child { grid-column: span 6; }
+  .machine-risk-explorer .metric-card dd { font-size: 18px; }
+  .machine-risk-explorer .metric-card .metric-explanation { font-size: 11px; }
+  .machine-risk-explorer .research-details { margin-top: 18px; }
+  .machine-risk-explorer .research-details > summary { padding: 16px; }
+  .machine-risk-explorer .research-details > summary > span { display: block; margin: 5px 0 0 15px; font-size: 9px; }
+  .machine-risk-explorer .research-details-body { padding: 0 16px 16px; }
+  .machine-risk-explorer .provenance { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .machine-risk-explorer .provenance dd { margin-bottom: 8px; }
+}
